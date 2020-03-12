@@ -1,7 +1,7 @@
 ﻿using AGTec.Common.CQRS.CommandHandlers;
 using AGTec.Common.CQRS.Commands;
 using AGTec.Common.CQRS.EventHandlers;
-using AGTec.Common.Base.Events;
+using AGTec.Common.CQRS.Events;
 using AGTec.Common.CQRS.Exceptions;
 using Microsoft.Extensions.DependencyInjection;
 using System;

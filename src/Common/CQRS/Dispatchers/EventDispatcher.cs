@@ -1,5 +1,5 @@
 ﻿using AGTec.Common.Base.Accessors;
-using AGTec.Common.Base.Events;
+using AGTec.Common.CQRS.Events;
 using AGTec.Common.CQRS.Extensions;
 using AGTec.Common.CQRS.Messaging;
 using System;

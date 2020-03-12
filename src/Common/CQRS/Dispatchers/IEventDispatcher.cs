@@ -1,4 +1,4 @@
-﻿using AGTec.Common.Base.Events;
+﻿using AGTec.Common.CQRS.Events;
 using System.Threading.Tasks;
 
 namespace AGTec.Common.CQRS.Dispatchers

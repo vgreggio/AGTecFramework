@@ -1,6 +1,6 @@
 ﻿using AGTec.Common.Base.Extensions;
 using AGTec.Common.CQRS.Attributes;
-using AGTec.Common.Base.Events;
+using AGTec.Common.CQRS.Events;
 using System;
 using System.Linq;
 using System.Reflection;
