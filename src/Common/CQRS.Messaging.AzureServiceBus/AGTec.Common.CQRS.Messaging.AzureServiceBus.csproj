@@ -5,14 +5,15 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>AGTec.Common.CQRS.Messaging.AzureServiceBus</Title>
     <Authors>Victor Gregegio</Authors>
+    <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
   
   <ItemGroup>
     <PackageReference Include="AGTec.Common.CQRS" Version="1.0.0" />
-    <PackageReference Include="AGTec.Common.CQRS.Messaging.JsonSerializer" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="4.1.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Azure.ServiceBus" Version="4.1.3" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="3.1.5" />
   </ItemGroup>
 
 </Project>

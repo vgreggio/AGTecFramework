@@ -36,7 +36,7 @@ namespace AGTec.Common.CQRS.Dispatchers
 
             var message = new Message(messageId, publishableAttr.Label, publishableAttr.Version, evt.GetType().AssemblyQualifiedName, payload);
 
-            return _messagePublisher.Publish(publishableAttr.TopicName, message);
+            return _messagePublisher.Publish(publishableAttr.DestName, publishableAttr.Type, message);
         }
     }
 }

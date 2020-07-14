@@ -5,13 +5,15 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>AGTec.Common.Repository</Title>
     <Authors>Victor Gregegio</Authors>
+    <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
 
   <ItemGroup>
     <PackageReference Include="AGTec.Common.Domain" Version="1.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.2" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.2" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.5" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="3.1.5" />
   </ItemGroup>
 
 </Project>

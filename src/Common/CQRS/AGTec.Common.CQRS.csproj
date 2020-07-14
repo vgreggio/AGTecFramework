@@ -5,11 +5,13 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>AGTec.Common.CQRS</Title>
     <Authors>Victor Gregegio</Authors>
+    <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="AGTec.Common.Base" Version="1.0.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.2" />
-    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="3.1.5" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="3.1.5" />
   </ItemGroup>
 </Project>

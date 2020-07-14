@@ -42,7 +42,7 @@ namespace AGTec.Common.CQRS.Dispatchers
 
                 var message = new Message(messageId, publishableAttr.Label, publishableAttr.Version, command.GetType().AssemblyQualifiedName, serializer.Serialize(command));
 
-                return publisher.Publish(publishableAttr.TopicName, message);
+                return publisher.Publish(publishableAttr.DestName, publishableAttr.Type, message);
             }
             else
             {

@@ -1,6 +1,7 @@
 ﻿using AGTec.Common.Base.Extensions;
 using AGTec.Common.CQRS.Exceptions;
 using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
@@ -17,7 +18,7 @@ namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
         private readonly IAzureMessageFilterFactory _filterFactory;
         private readonly ILogger<AzureMessageHandler> _logger;
 
-        private ISubscriptionClient _subscriptionClient;
+        private IReceiverClient _receiverClient;
 
         public AzureMessageHandler(IServiceProvider serviceProvider,
             IMessageBusConfiguration configuration,
@@ -32,22 +33,27 @@ namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
             _logger = logger;
         }
 
-        public void Handle(string topicName, string subscriptionName, IEnumerable<IMessageFilter> filters = null)
+        public void Handle(string destName, PublishType type, string subscriptionName = null, IEnumerable<IMessageFilter> filters = null)
         {
-            _subscriptionClient =
-                new SubscriptionClient(_configuration.ConnectionString, topicName, subscriptionName);
+            _receiverClient = type == PublishType.Queue
+                ? new QueueClient(_configuration.ConnectionString, destName) as IReceiverClient
+                : new SubscriptionClient(_configuration.ConnectionString, destName, subscriptionName);
 
-            var existingFilters = _subscriptionClient.GetRulesAsync().Result;
-
-            existingFilters?.ForEach(filter => _subscriptionClient.RemoveRuleAsync(filter.Name).Wait());
-
-            filters?.ForEach(filter =>
+            if (type == PublishType.Topic)
             {
-                if (filter.IsValid())
-                    _subscriptionClient.AddRuleAsync(_filterFactory.Create(filter)).Wait();
-            });
+                var subscriptionClient = _receiverClient as ISubscriptionClient;
+                var existingFilters = subscriptionClient.GetRulesAsync().Result;
 
-            _subscriptionClient.RegisterMessageHandler(
+                existingFilters?.ForEach(filter => subscriptionClient.RemoveRuleAsync(filter.Name).Wait());
+
+                filters?.ForEach(filter =>
+                {
+                    if (filter.IsValid())
+                        subscriptionClient.AddRuleAsync(_filterFactory.Create(filter)).Wait();
+                });
+            }
+
+            _receiverClient.RegisterMessageHandler(
                 (message, cancellationToken) =>
                 {
                     if (message.ContentType.Equals(_serializer.ContentType) == false)
@@ -74,7 +80,7 @@ namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
                                                    $"EntityPath: {exceptionEvent.ExceptionReceivedContext.EntityPath}.";
 
                     var errorMessage =
-                        $"Error processing messages from {topicName}/{subscriptionName}. {exceptionReceivedContext}";
+                        $"Error processing messages from {destName}/{subscriptionName}. {exceptionReceivedContext}";
 
                     _logger.LogError(exceptionEvent.Exception, errorMessage);
                     throw new ErrorHandlingMessageException(errorMessage, exceptionEvent.Exception);

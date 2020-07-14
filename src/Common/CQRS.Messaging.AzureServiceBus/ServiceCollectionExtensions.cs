@@ -1,5 +1,4 @@
 ﻿using AGTec.Common.CQRS.Dispatchers;
-using AGTec.Common.CQRS.Messaging.JsonSerializer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -20,17 +19,15 @@ namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
         private static IServiceCollection AddMessaging(this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddTransient<IMessageSerializer, JsonMessageSerializer>();
-            services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
             services.AddTransient<IMessageProcessor, MessageProcessor>();
 
-            // Adds ActiveMQ as MessageBroker.
-            services.AddActiveMQMessaging(configuration);
+            // Adds AzureServiceBus as MessageBroker.
+            services.AddAzureServiceBusMessaging(configuration);
 
             return services;
         }
 
-        private static IServiceCollection AddActiveMQMessaging(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddAzureServiceBusMessaging(this IServiceCollection services, IConfiguration configuration)
         {
             var azureMessageBusConfiguration = configuration.GetSection(AzureMessageBusConfiguration.ConfigSectionName).Get<AzureMessageBusConfiguration>();
 

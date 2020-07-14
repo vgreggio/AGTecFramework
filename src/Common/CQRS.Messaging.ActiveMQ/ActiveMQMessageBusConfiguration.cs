@@ -4,7 +4,7 @@ using System.Text;
 
 namespace AGTec.Common.CQRS.Messaging.ActiveMQ
 {
-    public class ActiveMQConfiguration : IMessageBusConfiguration
+    public class ActiveMQMessageBusConfiguration : IMessageBusConfiguration
     {
         public const string ConfigSectionName = "ActiveMQ";
 

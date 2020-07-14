@@ -3,8 +3,8 @@ using Microsoft.Extensions.Configuration;
 using Serilog;
 using Serilog.Formatting.Elasticsearch;
 using Microsoft.Extensions.DependencyInjection;
-using AGTec.Microservice.BackgroundServices;
 using Microsoft.AspNetCore.Hosting;
+using AGTec.Common.BackgroundTaskQueue;
 
 namespace AGTec.Microservice
 {
@@ -25,20 +25,18 @@ namespace AGTec.Microservice
                         config.MinimumLevel
                         .Debug()
                         .Enrich
-                        .FromLogContext();
-
-                        config.WriteTo
-                        .Console();
+                        .FromLogContext()
+                        .WriteTo
+                        .File("log.txt", rollingInterval: RollingInterval.Day);
                     }
                     else
                     {
                         config.MinimumLevel
                         .Information()
                         .Enrich
-                        .FromLogContext();
-
-                        config.WriteTo
-                        .Console(new ElasticsearchJsonFormatter());
+                        .FromLogContext()
+                        .WriteTo
+                        .File(new ElasticsearchJsonFormatter(), "log.txt", rollingInterval: RollingInterval.Day);
                     }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>

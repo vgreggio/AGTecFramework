@@ -4,6 +4,6 @@ namespace AGTec.Common.CQRS.Messaging
 {
     public interface IMessagePublisher
     {
-        Task Publish(string topicName, IMessage message);
+        Task Publish(string destName, PublishType type, IMessage message);
     }
 }

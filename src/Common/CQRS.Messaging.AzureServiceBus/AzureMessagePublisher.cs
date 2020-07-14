@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.ServiceBus;
+using Microsoft.Azure.ServiceBus.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -20,15 +21,17 @@ namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
             _logger = logger;
         }
 
-        public async Task Publish(string topicName, IMessage message)
+        public async Task Publish(string destName, PublishType type, IMessage message)
         {
             var messagePayload = _serializer.Serialize(message);
 
-            var topicClient = new TopicClient(_configuration.ConnectionString, topicName);
+            ISenderClient senderClient = type == PublishType.Queue 
+                ? new QueueClient(_configuration.ConnectionString, destName) as ISenderClient
+                : new TopicClient(_configuration.ConnectionString, destName);
 
             var messageGuid = Guid.NewGuid().ToString();
 
-            await topicClient.SendAsync(new Microsoft.Azure.ServiceBus.Message(messagePayload)
+            await senderClient.SendAsync(new Microsoft.Azure.ServiceBus.Message(messagePayload)
             {
                 CorrelationId = message.Id.ToString(),
                 MessageId = messageGuid,
@@ -36,9 +39,9 @@ namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
                 Label = message.Label
             });
 
-            await topicClient.CloseAsync();
+            await senderClient.CloseAsync();
 
-            _logger.LogInformation($"Message {messageGuid} published to {topicName}.");
+            _logger.LogInformation($"Message {messageGuid} published to {destName}.");
         }
     }
 }

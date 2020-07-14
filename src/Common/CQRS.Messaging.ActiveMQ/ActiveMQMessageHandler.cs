@@ -1,115 +1,76 @@
-﻿using AGTec.Common.Base.Extensions;
-using AGTec.Common.CQRS.Exceptions;
+﻿using AGTec.Common.CQRS.Exceptions;
 using Apache.NMS;
-using Apache.NMS.ActiveMQ.Commands;
+using Apache.NMS.AMQP;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.IO;
 
 namespace AGTec.Common.CQRS.Messaging.ActiveMQ
 {
-    public class ActiveMQMessageHandler : IMessageHandler, IDisposable
+    public sealed class ActiveMQMessageHandler : IMessageHandler
     {
         private readonly IServiceProvider _serviceProvider;
         private readonly IMessageBusConfiguration _configuration;
         private readonly IMessageSerializer _serializer;
         private readonly IActiveMQMessageFilterFactory _filterFactory;
+        private readonly IConnectionFactory _factory;
         private readonly ILogger<ActiveMQMessageHandler> _logger;
-        private readonly IConnectionFactory _connectionFactory;
 
         private IConnection _connection;
         private ISession _session;
-        private IMessageConsumer _consumer;
+        private IMessageConsumer _receiverClient;
+
 
         public ActiveMQMessageHandler(IServiceProvider serviceProvider,
-           IMessageBusConfiguration configuration,
-           IMessageSerializer serializer,
-           IActiveMQMessageFilterFactory filterFactory,
-           ILogger<ActiveMQMessageHandler> logger)
+            IMessageBusConfiguration configuration,
+            IMessageSerializer serializer,
+            IActiveMQMessageFilterFactory filterFactory,
+            ILogger<ActiveMQMessageHandler> logger)
         {
             _serviceProvider = serviceProvider;
             _configuration = configuration;
             _serializer = serializer;
             _filterFactory = filterFactory;
+            _factory = new ConnectionFactory(_configuration.ConnectionString);
             _logger = logger;
-
-            _connectionFactory = new NMSConnectionFactory(_configuration.ConnectionString);
         }
 
-        public void Handle(string topicName, string subscriptionName, IEnumerable<IMessageFilter> filters = null)
+        public void Handle(string destName, PublishType type, string subscriptionName = null, IEnumerable<IMessageFilter> filters = null)
         {
-            var selector = buildSelector(filters);
-
-            _connection = _connectionFactory.CreateConnection();
+            _connection = _factory.CreateConnection();
             _session = _connection.CreateSession();
-            _consumer = _session.CreateDurableConsumer(new ActiveMQTopic(topicName), subscriptionName, selector, false);
+            _receiverClient = type == PublishType.Queue
+                    ? _session.CreateConsumer(_session.GetQueue(destName))
+                    : _session.CreateDurableConsumer(_session.GetTopic(destName), subscriptionName, _filterFactory.Create(filters), false);
 
-            _consumer.Listener += (message) =>
+            _connection.Start();
+            _receiverClient.Listener += (msg) =>
             {
-                if (message is IBytesMessage byteMessage)
+                var message = msg as IBytesMessage;
+
+                if (message == null)
+                    throw new SerializerContentTypeMismatch();
+
+                if (message.Properties["ContentType"].Equals(_serializer.ContentType) == false)
+                    throw new SerializerContentTypeMismatch();
+
+                _logger.LogInformation($"Processing message {message.Properties["MessageId"]}.");
+
+                var payload = new byte[message.BodyLength];
+                if (message.BodyLength != message.ReadBytes(payload))
+                    throw new IOException("Is was not possible to read all the message's payload");
+
+                var messageBody = _serializer.Deserialize(payload);
+
+                // Needs its own DI Scope
+                using (var scope = _serviceProvider.CreateScope())
                 {
-                    var contentType = byteMessage.Properties.GetString(ActiveMQConstants.Message.Properties.ContentType);
-                    if (String.IsNullOrWhiteSpace(contentType))
-                        throw new SerializerContentTypeMismatch($"Missing Content-type for message: {message.NMSCorrelationID}");
-
-                    if (contentType.Equals(_serializer.ContentType) == false)
-                        throw new SerializerContentTypeMismatch();
-
-                    _logger.LogInformation($"Processing message {byteMessage.NMSCorrelationID}.");
-
-                    var byteMessageBody = new byte[byteMessage.BodyLength];
-                    byteMessage.ReadBytes(byteMessageBody);
-                    var messageBody = _serializer.Deserialize(byteMessageBody);
-
-                    // Needs its own DI Scope
-                    using (var scope = _serviceProvider.CreateScope())
-                    {
-                        var processor = scope.ServiceProvider.GetService<IMessageProcessor>();
-                        processor.Process(messageBody);
-                    }
+                    var processor = scope.ServiceProvider.GetService<IMessageProcessor>();
+                    processor.Process(messageBody).Wait();
                 }
-                else
-                    throw new MessageTypeNotSupportedException($"ActiveMQ message type: {message.NMSType} is not supported.");
             };
         }
-
-        private String buildSelector(IEnumerable<IMessageFilter> filters = null)
-        {
-            if (filters == null || filters.IsNullOrEmpty())
-                return String.Empty;
-
-            StringBuilder selectorStringBuilder = new StringBuilder();
-            filters?.ForEach(filter =>
-            {
-                if (filter.IsValid())
-                {
-                    if (selectorStringBuilder.ToString().IsNullOrEmpty() == false)
-                        selectorStringBuilder.Append(" AND ");
-                    selectorStringBuilder.Append(_filterFactory.Create(filter));
-                }
-            });
-
-            return selectorStringBuilder.ToString();
-        }
-
-        #region IDisposable
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        protected void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _consumer.Dispose();
-                _session.Dispose();
-                _connection.Dispose();
-            }
-        }
-        #endregion
     }
 }

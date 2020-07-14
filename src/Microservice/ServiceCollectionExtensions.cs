@@ -1,7 +1,7 @@
+using AGTec.Common.BackgroundTaskQueue;
 using AGTec.Microservice.Auth.Configuration;
 using AGTec.Microservice.Auth.Handlers;
 using AGTec.Microservice.Auth.Providers;
-using AGTec.Microservice.BackgroundServices;
 using AGTec.Microservice.Cache;
 using AGTec.Microservice.Filters;
 using AGTec.Microservice.Swagger;

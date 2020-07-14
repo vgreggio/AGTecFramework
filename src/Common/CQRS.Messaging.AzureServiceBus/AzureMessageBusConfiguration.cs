@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
+﻿namespace AGTec.Common.CQRS.Messaging.AzureServiceBus
 {
     public class AzureMessageBusConfiguration : IMessageBusConfiguration
     {

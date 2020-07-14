@@ -1,26 +1,44 @@
-﻿using AGTec.Common.CQRS.Messaging.Exceptions;
+﻿using AGTec.Common.Base.Extensions;
+using AGTec.Common.CQRS.Messaging.Exceptions;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace AGTec.Common.CQRS.Messaging.ActiveMQ
 {
     class ActiveMQMessageFilterFactory : IActiveMQMessageFilterFactory
     {
-        public String Create(IMessageFilter filter)
+        public string Create(IEnumerable<IMessageFilter> filters)
         {
-            switch (filter.Type)
+            if (filters == null || filters.Any() == false)
+                return null;
+
+            var result = String.Empty;
+            filters.ForEach(filter =>
             {
-                case MessageFilterType.CorrelationIdFilter:
-                    return "NMSCorrelationID =" + filter.Expression;
+                if (String.IsNullOrWhiteSpace(result) == false)
+                    result += " AND ";
 
-                case MessageFilterType.LabelFilter:
-                    return ActiveMQConstants.Message.Properties.Label + "=" + filter.Expression;
+                switch (filter.Type)
+                {
+                    case MessageFilterType.CorrelationIdFilter:
+                        result += "NMSCorrelationID = " + filter.Expression;
+                        break;
 
-                case MessageFilterType.QueryFilter:
-                    return filter.Name + "=" + filter.Expression;
+                    case MessageFilterType.LabelFilter:
+                        result += "Label = " + filter.Expression;
+                        break;
 
-                default:
-                    throw new InvalidMessageFilterException($"Filter {filter.Type} is invalid for {this.GetType().AssemblyQualifiedName} implementation.");
-            }
+                    case MessageFilterType.QueryFilter:
+                        result += filter.Expression;
+                        break;
+
+                    default:
+                        throw new InvalidMessageFilterException($"Filter {filter.Type} is invalid for {this.GetType().AssemblyQualifiedName} implementation.");
+                }
+            });
+
+            return result;
         }
     }
 }

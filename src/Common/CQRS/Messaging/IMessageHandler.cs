@@ -4,6 +4,6 @@ namespace AGTec.Common.CQRS.Messaging
 {
     public interface IMessageHandler
     {
-        void Handle(string topicName, string subscriptionName, IEnumerable<IMessageFilter> filters = null);
+        void Handle(string destName, PublishType type, string subscriptionName = null, IEnumerable<IMessageFilter> filters = null);
     }
 }

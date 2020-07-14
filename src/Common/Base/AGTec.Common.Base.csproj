@@ -5,6 +5,8 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Title>AGTec.Common.Base</Title>
     <Authors>Victor Gregegio</Authors>
+    <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
 </Project>

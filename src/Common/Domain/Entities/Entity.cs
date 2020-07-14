@@ -21,6 +21,7 @@ namespace AGTec.Common.Domain.Entities
         public DateTime LastUpdated { get; set; }
 
         public string UpdatedBy { get; set; }
+
         public byte[] Version { get; set; }
 
         protected override IEnumerable<object> GetEqualityComponents()

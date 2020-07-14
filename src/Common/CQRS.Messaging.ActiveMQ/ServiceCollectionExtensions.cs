@@ -1,5 +1,4 @@
 ﻿using AGTec.Common.CQRS.Dispatchers;
-using AGTec.Common.CQRS.Messaging.JsonSerializer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -20,8 +19,6 @@ namespace AGTec.Common.CQRS.Messaging.ActiveMQ
         private static IServiceCollection AddMessaging(this IServiceCollection services,
             IConfiguration configuration)
         {
-            services.AddTransient<IMessageSerializer, JsonMessageSerializer>();
-            services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
             services.AddTransient<IMessageProcessor, MessageProcessor>();
 
             // Adds ActiveMQ as MessageBroker.
@@ -32,12 +29,12 @@ namespace AGTec.Common.CQRS.Messaging.ActiveMQ
 
         private static IServiceCollection AddActiveMQMessaging(this IServiceCollection services, IConfiguration configuration)
         {
-            var activeMQConfiguration = configuration.GetSection(ActiveMQConfiguration.ConfigSectionName).Get<ActiveMQConfiguration>();
+            var activeMQMessageBusConfiguration = configuration.GetSection(ActiveMQMessageBusConfiguration.ConfigSectionName).Get<ActiveMQMessageBusConfiguration>();
 
-            if (activeMQConfiguration.IsValid() == false)
-                throw new Exception($"Configuration section '{ActiveMQConfiguration.ConfigSectionName}' not found.");
+            if (activeMQMessageBusConfiguration.IsValid() == false)
+                throw new Exception($"Configuration section '{ActiveMQMessageBusConfiguration.ConfigSectionName}' not found.");
 
-            services.AddSingleton<IMessageBusConfiguration>(activeMQConfiguration);
+            services.AddSingleton<IMessageBusConfiguration>(activeMQMessageBusConfiguration);
             services.AddTransient<IActiveMQMessageFilterFactory, ActiveMQMessageFilterFactory>();
             services.AddTransient<IMessagePublisher, ActiveMQMessagePublisher>();
             services.AddTransient<IMessageHandler, ActiveMQMessageHandler>();
