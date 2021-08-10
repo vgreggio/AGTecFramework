@@ -8,7 +8,7 @@ namespace AGTec.Common.Domain.Entities
     {
         protected Entity(Guid id)
         {
-            if (id == null || Guid.Empty == id)
+            if (Guid.Empty == id)
                 throw new ArgumentNullException(nameof(id));
 
             Id = id;
