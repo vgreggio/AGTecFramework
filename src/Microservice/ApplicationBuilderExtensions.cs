@@ -4,19 +4,20 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog;
 
 namespace AGTec.Microservice
 {
      public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseAGTecMicroservice(this IApplicationBuilder app)
+        public static IApplicationBuilder UseAGTecMicroservice(this IApplicationBuilder app, IHostEnvironment hostEnv)
         {
-            return app.UseCommonAGTecMicroservice();
+            return app.UseCommonAGTecMicroservice(hostEnv);
         }
 
         // With SQL Server + Migrations
-        public static IApplicationBuilder UseAGTecMicroservice<TContext>(this IApplicationBuilder app) where TContext : DbContext
+        public static IApplicationBuilder UseAGTecMicroservice<TContext>(this IApplicationBuilder app, IHostEnvironment hostEnv) where TContext : DbContext
         {
             // Run Migrations
             using (var scope = app.ApplicationServices.CreateScope())
@@ -27,10 +28,10 @@ namespace AGTec.Microservice
                 }
             }
 
-            return app.UseCommonAGTecMicroservice();
+            return app.UseCommonAGTecMicroservice(hostEnv);
         }
 
-        private static IApplicationBuilder UseCommonAGTecMicroservice(this IApplicationBuilder app)
+        private static IApplicationBuilder UseCommonAGTecMicroservice(this IApplicationBuilder app, IHostEnvironment hostEnv)
         {
             app.UseSerilogRequestLogging();
 
@@ -61,6 +62,11 @@ namespace AGTec.Microservice
             app.UseAuthorization();
 
             app.UseCors("CorsPolicy");
+
+            if (hostEnv.IsDevelopment())
+            {
+                app.UseMiniProfiler();
+            }
 
             app.UseEndpoints(endpoints =>
             {

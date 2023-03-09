@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Polly;
 using Polly.Extensions.Http;
@@ -28,21 +29,21 @@ namespace AGTec.Microservice
         private const string Retry = "DefaultRetryPolicy";
         private const string Tiemout = "DefaultTimeoutPolicy";
 
-        public static IServiceCollection AddAGTecMicroservice(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddAGTecMicroservice(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnv)
         {
-            services.AddCommonAGTecMicroservice(configuration);
+            services.AddCommonAGTecMicroservice(configuration, hostEnv);
             services.AddHealthChecks();
             return services;
         }
 
-        public static IServiceCollection AddAGTecMicroservice<TContext>(this IServiceCollection services, IConfiguration configuration) where TContext : DbContext
+        public static IServiceCollection AddAGTecMicroservice<TContext>(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnv) where TContext : DbContext
         {
-            services.AddCommonAGTecMicroservice(configuration);
+            services.AddCommonAGTecMicroservice(configuration, hostEnv);
             services.AddHealthChecks().AddDbContextCheck<TContext>();
             return services;
         }
 
-        private static IServiceCollection AddCommonAGTecMicroservice(this IServiceCollection services, IConfiguration configuration)
+        private static IServiceCollection AddCommonAGTecMicroservice(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnv)
         {
             // InMemory Cache
             services.AddMemoryCache();
@@ -122,6 +123,15 @@ namespace AGTec.Microservice
             // Application Insights
             if (configuration.GetChildren().Any(child => child.Key.Equals("ApplicationInsights")))
                 services.AddApplicationInsightsTelemetry(configuration);
+
+            if (hostEnv.IsDevelopment())
+            {
+                services.AddMiniProfiler(options =>
+                {
+                    options.RouteBasePath = "/profiler";
+                    options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
+                });
+            }
 
             return services;
         }
