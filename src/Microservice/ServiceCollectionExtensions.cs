@@ -130,7 +130,7 @@ namespace AGTec.Microservice
                 {
                     options.RouteBasePath = "/profiler";
                     options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
-                });
+                }).AddEntityFramework();
             }
 
             return services;
