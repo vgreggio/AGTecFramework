@@ -1,3 +1,4 @@
+using AGTec.Common.Monitor;
 using AGTec.Microservice.Database;
 using Correlate.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -42,7 +43,9 @@ namespace AGTec.Microservice
             app.UseRouting();
 
             app.UseHealthChecks("/health");
-
+            
+            app.UseAGTecMonitor(hostEnv);
+        
             // Adds Swagger API Doc
             var provider = app.ApplicationServices.GetService<IApiVersionDescriptionProvider>();
             app.UseSwagger().UseSwaggerUI(options =>
@@ -62,16 +65,10 @@ namespace AGTec.Microservice
             app.UseAuthorization();
 
             app.UseCors("CorsPolicy");
-
-            if (hostEnv.IsDevelopment())
-            {
-                app.UseMiniProfiler();
-            }
-
+            
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers()
-                         .RequireAuthorization();
+                endpoints.MapControllers().RequireAuthorization();
             });
 
             return app;

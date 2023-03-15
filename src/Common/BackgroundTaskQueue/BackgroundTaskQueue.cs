@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -40,5 +41,11 @@ namespace AGTec.Common.BackgroundTaskQueue
 
             return workItem;
         }
+
+        public void Pause() => Paused = true;
+        public void Restart() => Paused = false;
+        
+        public IEnumerable<string> QueuedTasks => _workItems.Select(x => x.Key);
+        public bool Paused { get; private set; } = false;
     }
 }

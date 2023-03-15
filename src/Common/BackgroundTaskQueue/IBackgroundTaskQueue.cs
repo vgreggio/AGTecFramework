@@ -10,5 +10,11 @@ namespace AGTec.Common.BackgroundTaskQueue
         void Queue(String workName, Func<CancellationToken, Task> workItem);
 
         Task<KeyValuePair<string, Func<CancellationToken, Task>>> Dequeue(CancellationToken cancellationToken);
+        
+        IEnumerable<string> QueuedTasks { get; }
+
+        bool Paused { get; }
+        void Pause();
+        void Restart();
     }
 }

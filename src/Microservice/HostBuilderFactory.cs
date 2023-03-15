@@ -43,7 +43,11 @@ namespace AGTec.Microservice
                 {
                     webBuilder.UseStartup<TStartup>();
                 })
-                .ConfigureServices(services => services.AddHostedService<QueuedHostedService>());
+                .ConfigureServices(services =>
+                {
+                    
+                    services.AddHostedService<QueuedHostedService>();
+                });
         }
     }
 }

@@ -1,4 +1,5 @@
 using AGTec.Common.BackgroundTaskQueue;
+using AGTec.Common.Monitor;
 using AGTec.Microservice.Auth.Configuration;
 using AGTec.Microservice.Auth.Handlers;
 using AGTec.Microservice.Auth.Providers;
@@ -97,6 +98,9 @@ namespace AGTec.Microservice
                     options.OperationFilter<SwaggerDefaultValues>();
                 });
 
+            // Monitor
+            services.AddAGTecMonitor(hostEnv);
+            
             // CorrelationId
             services.AddCorrelate(options =>
                 options.RequestHeaders = new[]
@@ -107,31 +111,22 @@ namespace AGTec.Microservice
             // Authentication / Authorization
             services.AddAuth(configuration);
 
-            // Controllers with Action Filters
-            services.AddControllers(opts =>
-            {
-                opts.Filters.Add<InvalidModelStateFilter>();
-                opts.Filters.Add<CorrelationIdFilter>();
-            }).AddNewtonsoftJson();
-
             // HTTPClient Policies
             services.AddHttpClientPolicies();
 
             // Queued Tasks
             services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+            
+            // Controllers with Action Filters
+            services.AddControllersWithViews(opts =>
+            {
+                opts.Filters.Add<InvalidModelStateFilter>();
+                opts.Filters.Add<CorrelationIdFilter>();
+            }).AddNewtonsoftJson();
 
             // Application Insights
             if (configuration.GetChildren().Any(child => child.Key.Equals("ApplicationInsights")))
                 services.AddApplicationInsightsTelemetry(configuration);
-
-            if (hostEnv.IsDevelopment())
-            {
-                services.AddMiniProfiler(options =>
-                {
-                    options.RouteBasePath = "/profiler";
-                    options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
-                }).AddEntityFramework();
-            }
 
             return services;
         }

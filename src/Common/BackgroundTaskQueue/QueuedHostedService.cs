@@ -7,6 +7,8 @@ namespace AGTec.Common.BackgroundTaskQueue
 {
     public class QueuedHostedService : BackgroundService<int>
     {
+        private const int THREAD_SLEEP_TIME_WHILE_PAUSED = 5000; // 5 seconds
+        
         private readonly IBackgroundTaskQueue _tasksToRun;
         private readonly ILogger<QueuedHostedService> _logger;
 
@@ -17,28 +19,31 @@ namespace AGTec.Common.BackgroundTaskQueue
         {
             _tasksToRun = tasksToRun;
             _logger = logger;
-            _tasksCounter = 0;
         }
 
         protected override async Task<int> ExecuteAsync(CancellationToken stoppingToken)
         {
             while (stoppingToken.IsCancellationRequested == false)
             {
-                var taskToRun = await _tasksToRun.Dequeue(stoppingToken);
-
-                try
+                while (!_tasksToRun.Paused && stoppingToken.IsCancellationRequested == false)
                 {
-                    _logger.LogInformation($"Starting '{taskToRun.Key}'.");
+                    var taskToRun = await _tasksToRun.Dequeue(stoppingToken);
 
-                    await taskToRun.Value(stoppingToken);
+                    try
+                    {
+                        _logger.LogInformation($"Starting '{taskToRun.Key}'.");
 
-                    _logger.LogInformation($"Finished '{taskToRun.Key}'.");
-                    _tasksCounter++;
+                        await taskToRun.Value(stoppingToken);
+
+                        _logger.LogInformation($"Finished '{taskToRun.Key}'.");
+                        _tasksCounter++;
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError($"Error running task {nameof(taskToRun.Key)}.", ex);
+                    }
                 }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error running task {nameof(taskToRun.Key)}.", ex);
-                }
+                Thread.Sleep(THREAD_SLEEP_TIME_WHILE_PAUSED);
             }
             return _tasksCounter;
         }
