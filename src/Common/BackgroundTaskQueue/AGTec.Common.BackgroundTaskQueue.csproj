@@ -14,8 +14,4 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.3"/>
     </ItemGroup>
 
-    <ItemGroup>
-        <Compile Remove="IQueuedHostedService.cs"/>
-    </ItemGroup>
-
 </Project>
