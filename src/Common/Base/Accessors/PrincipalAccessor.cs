@@ -1,13 +1,15 @@
 using System.Security.Principal;
 using System.Threading;
 
-namespace AGTec.Common.Base.Accessors
+namespace AGTec.Common.Base.Accessors;
+
+public static class PrincipalAccessor
 {
-    public static class PrincipalAccessor
+    private static readonly AsyncLocal<IPrincipal> _principal = new AsyncLocal<IPrincipal>();
+
+    public static IPrincipal Principal
     {
-        private static readonly AsyncLocal<IPrincipal> _principal = new AsyncLocal<IPrincipal>();
-
-        public static IPrincipal Principal { get => _principal.Value; set => _principal.Value = value; }
-
+        get => _principal.Value;
+        set => _principal.Value = value;
     }
 }

@@ -1,7 +1,6 @@
-namespace AGTec.Common.Base.ValueObjects
+namespace AGTec.Common.Base.ValueObjects;
+
+public interface ISingleValueObject<out T>
 {
-   public interface ISingleValueObject<out T>
-    {
-        T GetValue();
-    }
+    T GetValue();
 }

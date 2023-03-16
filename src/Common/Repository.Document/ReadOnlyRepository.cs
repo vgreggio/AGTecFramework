@@ -2,6 +2,7 @@
 using MongoDB.Driver;
 using System;
 using System.Threading.Tasks;
+using AGTec.Common.Base.Extensions;
 
 namespace AGTec.Common.Repository.Document
 {
@@ -9,7 +10,7 @@ namespace AGTec.Common.Repository.Document
     {
         protected readonly IDocumentContext _context;
 
-        protected readonly string _collectionName = typeof(T).Name;
+        protected readonly string _collectionName = typeof(T).Name.ToSnakeCase();
 
         protected ReadOnlyRepository(IDocumentContext context)
         {
