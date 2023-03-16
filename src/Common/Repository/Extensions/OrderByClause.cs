@@ -1,40 +1,37 @@
-﻿using AGTec.Common.Domain.Entities;
-using System;
+﻿using System;
 using System.Linq;
 using System.Linq.Expressions;
+using AGTec.Common.Domain.Entities;
 
-namespace AGTec.Common.Repository.Extensions
+namespace AGTec.Common.Repository.Extensions;
+
+public enum SortDirection
 {
-    public enum SortDirection
+    Ascending,
+    Decending
+}
+
+public class OrderByClause<T, TProperty> : IOrderByClause<T> where T : IEntity, new()
+{
+    private OrderByClause()
     {
-        Ascending,
-        Decending
     }
-    public class OrderByClause<T, TProperty> : IOrderByClause<T> where T : IEntity, new()
+
+    public OrderByClause(
+        Expression<Func<T, TProperty>> orderBy,
+        SortDirection sortDirection = SortDirection.Ascending)
     {
-        private OrderByClause() { }
+        OrderBy = orderBy;
+        SortDirection = sortDirection;
+    }
 
-        public OrderByClause(
-            Expression<Func<T, TProperty>> orderBy,
-            SortDirection sortDirection = SortDirection.Ascending)
-        {
-            OrderBy = orderBy;
-            SortDirection = sortDirection;
-        }
+    private Expression<Func<T, TProperty>> OrderBy { get; }
+    private SortDirection SortDirection { get; }
 
-        private Expression<Func<T, TProperty>> OrderBy { get; set; }
-        private SortDirection SortDirection { get; set; }
-
-        public IOrderedQueryable<T> ApplySort(IQueryable<T> query, bool firstSort)
-        {
-            if (SortDirection == SortDirection.Ascending)
-            {
-                return firstSort ? query.OrderBy(OrderBy) : ((IOrderedQueryable<T>)query).ThenBy(OrderBy);
-            }
-            else
-            {
-                return firstSort ? query.OrderByDescending(OrderBy) : ((IOrderedQueryable<T>)query).ThenByDescending(OrderBy);
-            }
-        }
+    public IOrderedQueryable<T> ApplySort(IQueryable<T> query, bool firstSort)
+    {
+        if (SortDirection == SortDirection.Ascending)
+            return firstSort ? query.OrderBy(OrderBy) : ((IOrderedQueryable<T>)query).ThenBy(OrderBy);
+        return firstSort ? query.OrderByDescending(OrderBy) : ((IOrderedQueryable<T>)query).ThenByDescending(OrderBy);
     }
 }

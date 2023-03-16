@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace AGTec.Common.CQRS.Exceptions
-{
-    public class EventHandlerNotFoundException : Exception
-    {
-        public EventHandlerNotFoundException() : base()
-        { }
+namespace AGTec.Common.CQRS.Exceptions;
 
-        public EventHandlerNotFoundException(string message) : base(message)
-        { }
+public class EventHandlerNotFoundException : Exception
+{
+    public EventHandlerNotFoundException()
+    {
+    }
+
+    public EventHandlerNotFoundException(string message) : base(message)
+    {
     }
 }

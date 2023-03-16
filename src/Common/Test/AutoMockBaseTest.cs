@@ -1,42 +1,41 @@
-﻿using AutoMoqCore;
+﻿using System;
+using AutoMoqCore;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
-using System;
 
-namespace AGTec.Common.Test
+namespace AGTec.Common.Test;
+
+public abstract class AutoMockBaseTest<TSut, TContract>
+    : BaseTestWithSut<TContract> where TSut : class, TContract
 {
-    public abstract class AutoMockBaseTest<TSut, TContract>
-           : BaseTestWithSut<TContract> where TSut : class, TContract
+    protected AutoMoqer AutoMocker { get; private set; }
+
+    protected TSut ConcreteSut => (TSut)Sut;
+
+    public Mock<T> Dep<T>() where T : class
     {
-        protected AutoMoqer AutoMocker { get; private set; }
+        return AutoMocker.GetMock<T>();
+    }
 
-        protected TSut ConcreteSut => (TSut)this.Sut;
+    protected override TContract CreateSut()
+    {
+        if (typeof(TSut).IsInterface)
+            throw new NotSupportedException(
+                "You can not use interfaces as SUT. Please use concrete class implementations.");
 
-        public Mock<T> Dep<T>() where T : class
-        {
-            return AutoMocker.GetMock<T>();
-        }
+        return AutoMocker.Resolve<TSut>();
+    }
 
-        protected override TContract CreateSut()
-        {
-            if (typeof(TSut).IsInterface)
-                throw new NotSupportedException(
-                    "You can not use interfaces as SUT. Please use concrete class implementations.");
+    protected override void BeforeEachTest()
+    {
+        base.BeforeEachTest();
 
-            return AutoMocker.Resolve<TSut>();
-        }
+        AutoMocker = new AutoMoqer();
+    }
 
-        protected override void BeforeEachTest()
-        {
-            base.BeforeEachTest();
-
-            AutoMocker = new AutoMoqer();
-        }
-
-        protected void AssertDependencyInjection<TResult>(Func<TContract, TResult> func)
-            where TResult : class
-        {
-            Assert.AreSame(Dep<TResult>(), func(this.Sut));
-        }
+    protected void AssertDependencyInjection<TResult>(Func<TContract, TResult> func)
+        where TResult : class
+    {
+        Assert.AreSame(Dep<TResult>(), func(Sut));
     }
 }

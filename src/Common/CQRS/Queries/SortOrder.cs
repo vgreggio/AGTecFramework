@@ -1,8 +1,7 @@
-﻿namespace AGTec.Common.CQRS.Queries
+﻿namespace AGTec.Common.CQRS.Queries;
+
+public enum SortOrder
 {
-    public enum SortOrder
-    {
-        Ascending = 0,
-        Descending = 1
-    }
+    Ascending = 0,
+    Descending = 1
 }

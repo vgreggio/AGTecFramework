@@ -1,11 +1,10 @@
-﻿using AGTec.Common.CQRS.Events;
-using System;
+﻿using System;
 using System.Threading.Tasks;
+using AGTec.Common.CQRS.Events;
 
-namespace AGTec.Common.CQRS.EventHandlers
+namespace AGTec.Common.CQRS.EventHandlers;
+
+public interface IEventHandler<in TEvent> : IDisposable where TEvent : IEvent
 {
-    public interface IEventHandler<in TEvent> : IDisposable where TEvent : IEvent
-    {
-        Task Process(TEvent evt);
-    }
+    Task Process(TEvent evt);
 }

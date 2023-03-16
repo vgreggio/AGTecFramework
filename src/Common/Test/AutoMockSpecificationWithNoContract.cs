@@ -1,7 +1,6 @@
-﻿namespace AGTec.Common.Test
+﻿namespace AGTec.Common.Test;
+
+public abstract class AutoMockSpecificationWithNoContract<TSut>
+    : AutoMockSpecification<TSut, TSut> where TSut : class
 {
-    public abstract class AutoMockSpecificationWithNoContract<TSut>
-        : AutoMockSpecification<TSut, TSut> where TSut : class
-    {
-    }
 }

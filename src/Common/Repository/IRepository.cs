@@ -1,22 +1,22 @@
-﻿using AGTec.Common.Domain.Entities;
+﻿using System.Threading.Tasks;
+using AGTec.Common.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Threading.Tasks;
 
-namespace AGTec.Common.Repository
+namespace AGTec.Common.Repository;
+
+public interface IRepository<TEntity, TContext> : IReadOnlyRepository<TEntity, TContext>, ITrackingChangeRepository
+    where TContext : DbContext where TEntity : class, IEntity
 {
-    public interface IRepository<TEntity, TContext> : IReadOnlyRepository<TEntity, TContext>, ITrackingChangeRepository where TContext : DbContext where TEntity : class, IEntity
-    {
-        IDbContextTransaction BeginTransaction();
+    IDbContextTransaction BeginTransaction();
 
-        Task<TEntity> Insert(TEntity item, bool saveImmediately = true);
+    Task<TEntity> Insert(TEntity item, bool saveImmediately = true);
 
-        Task<TEntity> Update(TEntity item, bool saveImmediately = true);
+    Task<TEntity> Update(TEntity item, bool saveImmediately = true);
 
-        Task Delete(TEntity item, bool saveImmediately = true);
+    Task Delete(TEntity item, bool saveImmediately = true);
 
-        TEntity Attach(TEntity item);
+    TEntity Attach(TEntity item);
 
-        Task SaveChanges();
-    }
+    Task SaveChanges();
 }

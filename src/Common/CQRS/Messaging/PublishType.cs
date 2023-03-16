@@ -1,8 +1,7 @@
-﻿namespace AGTec.Common.CQRS.Messaging
+﻿namespace AGTec.Common.CQRS.Messaging;
+
+public enum PublishType
 {
-    public enum PublishType
-    {
-        Queue,
-        Topic
-    }
+    Queue,
+    Topic
 }

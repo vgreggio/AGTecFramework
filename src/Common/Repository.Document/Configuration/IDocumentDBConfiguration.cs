@@ -1,8 +1,7 @@
-﻿namespace AGTec.Common.Repository.Document.Configuration
+﻿namespace AGTec.Common.Repository.Document.Configuration;
+
+public interface IDocumentDBConfiguration
 {
-    public interface IDocumentDBConfiguration
-    {
-        string ConnectionString { get; }
-        string Database { get; }
-    }
+    string ConnectionString { get; }
+    string Database { get; }
 }

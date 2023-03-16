@@ -1,44 +1,43 @@
-﻿using AGTec.Common.Base.Extensions;
-using AGTec.Common.CQRS.Messaging.Exceptions;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using AGTec.Common.Base.Extensions;
+using AGTec.Common.CQRS.Messaging.Exceptions;
 
-namespace AGTec.Common.CQRS.Messaging.ActiveMQ
+namespace AGTec.Common.CQRS.Messaging.ActiveMQ;
+
+internal class ActiveMQMessageFilterFactory : IActiveMQMessageFilterFactory
 {
-    class ActiveMQMessageFilterFactory : IActiveMQMessageFilterFactory
+    public string Create(IEnumerable<IMessageFilter> filters)
     {
-        public string Create(IEnumerable<IMessageFilter> filters)
+        if (filters == null || filters.Any() == false)
+            return null;
+
+        var result = string.Empty;
+        filters.ForEach(filter =>
         {
-            if (filters == null || filters.Any() == false)
-                return null;
+            if (string.IsNullOrWhiteSpace(result) == false)
+                result += " AND ";
 
-            var result = String.Empty;
-            filters.ForEach(filter =>
+            switch (filter.Type)
             {
-                if (String.IsNullOrWhiteSpace(result) == false)
-                    result += " AND ";
+                case MessageFilterType.CorrelationIdFilter:
+                    result += "NMSCorrelationID = " + filter.Expression;
+                    break;
 
-                switch (filter.Type)
-                {
-                    case MessageFilterType.CorrelationIdFilter:
-                        result += "NMSCorrelationID = " + filter.Expression;
-                        break;
+                case MessageFilterType.LabelFilter:
+                    result += "Label = " + filter.Expression;
+                    break;
 
-                    case MessageFilterType.LabelFilter:
-                        result += "Label = " + filter.Expression;
-                        break;
+                case MessageFilterType.QueryFilter:
+                    result += filter.Expression;
+                    break;
 
-                    case MessageFilterType.QueryFilter:
-                        result += filter.Expression;
-                        break;
+                default:
+                    throw new InvalidMessageFilterException(
+                        $"Filter {filter.Type} is invalid for {GetType().AssemblyQualifiedName} implementation.");
+            }
+        });
 
-                    default:
-                        throw new InvalidMessageFilterException($"Filter {filter.Type} is invalid for {this.GetType().AssemblyQualifiedName} implementation.");
-                }
-            });
-
-            return result;
-        }
+        return result;
     }
 }

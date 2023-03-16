@@ -1,9 +1,8 @@
-﻿namespace AGTec.Common.CQRS.Messaging
+﻿namespace AGTec.Common.CQRS.Messaging;
+
+public interface IMessageSerializer
 {
-    public interface IMessageSerializer
-    {
-        byte[] Serialize(IMessage message);
-        string ContentType { get; }
-        IMessage Deserialize(byte[] messageBody);
-    }
+    string ContentType { get; }
+    byte[] Serialize(IMessage message);
+    IMessage Deserialize(byte[] messageBody);
 }

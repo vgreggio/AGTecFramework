@@ -5,7 +5,7 @@ namespace AGTec.Common.Base.Accessors;
 
 public static class CorrelationIdAccessor
 {
-    private static readonly AsyncLocal<Guid> _correlationId = new AsyncLocal<Guid>();
+    private static readonly AsyncLocal<Guid> _correlationId = new();
 
     public static Guid CorrelationId
     {

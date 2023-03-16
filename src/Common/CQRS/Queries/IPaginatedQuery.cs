@@ -1,8 +1,7 @@
-﻿namespace AGTec.Common.CQRS.Queries
+﻿namespace AGTec.Common.CQRS.Queries;
+
+public interface IPaginatedQuery<out TResult> : IQuery<TResult>
 {
-    public interface IPaginatedQuery<out TResult> : IQuery<TResult>
-    {
-        int Page { get; }
-        int PageSize { get; }
-    }
+    int Page { get; }
+    int PageSize { get; }
 }

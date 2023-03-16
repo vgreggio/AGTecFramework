@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace AGTec.Common.BackgroundTaskQueue
+namespace AGTec.Common.BackgroundTaskQueue;
+
+public interface IBackgroundTaskQueue
 {
-    public interface IBackgroundTaskQueue
-    {
-        void Queue(String workName, Func<CancellationToken, Task> workItem);
+    IEnumerable<string> QueuedTasks { get; }
 
-        Task<KeyValuePair<string, Func<CancellationToken, Task>>> Dequeue(CancellationToken cancellationToken);
-        
-        IEnumerable<string> QueuedTasks { get; }
+    bool Paused { get; }
+    void Queue(string workName, Func<CancellationToken, Task> workItem);
 
-        bool Paused { get; }
-        void Pause();
-        void Restart();
-    }
+    Task<KeyValuePair<string, Func<CancellationToken, Task>>> Dequeue(CancellationToken cancellationToken);
+    void Pause();
+    void Restart();
 }

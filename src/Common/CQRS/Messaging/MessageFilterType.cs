@@ -1,16 +1,12 @@
 ﻿using System.ComponentModel;
 
-namespace AGTec.Common.CQRS.Messaging
+namespace AGTec.Common.CQRS.Messaging;
+
+public enum MessageFilterType
 {
-    public enum MessageFilterType
-    {
-        [Description("CorrelationId Filter")]
-        CorrelationIdFilter = 1,
+    [Description("CorrelationId Filter")] CorrelationIdFilter = 1,
 
-        [Description("Label Filter")]
-        LabelFilter = 2,
+    [Description("Label Filter")] LabelFilter = 2,
 
-        [Description("Query Filter")]
-        QueryFilter = 3,
-    }
+    [Description("Query Filter")] QueryFilter = 3
 }

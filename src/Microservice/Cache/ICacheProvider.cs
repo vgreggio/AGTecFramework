@@ -1,11 +1,10 @@
 ﻿using System;
 
-namespace AGTec.Microservice.Cache
+namespace AGTec.Microservice.Cache;
+
+public interface ICacheProvider
 {
-    public interface ICacheProvider
-    {
-        T Get<T>(string key);
-        void Remove(string key);
-        void Set(string key, object value, TimeSpan expirationTimeSpan);
-    }
+    T Get<T>(string key);
+    void Remove(string key);
+    void Set(string key, object value, TimeSpan expirationTimeSpan);
 }

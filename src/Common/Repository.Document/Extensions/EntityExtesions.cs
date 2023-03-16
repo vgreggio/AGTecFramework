@@ -1,27 +1,24 @@
-﻿using AGTec.Common.Document.Entities;
-using AGTec.Common.Document.Attributes;
+﻿using AGTec.Common.Document.Attributes;
+using AGTec.Common.Document.Entities;
 
-namespace AGTec.Common.Repository.Document.Extensions
+namespace AGTec.Common.Repository.Document.Extensions;
+
+public static class EntityExtesions
 {
-    public static class EntityExtesions
+    public static void SetSchemaVersion(this IDocumentEntity entity)
     {
-        public static void SetSchemaVersion(this IDocumentEntity entity)
-        {
-            var memberInfo = entity.GetType();
-            var attributes = memberInfo.GetCustomAttributes(true);
+        var memberInfo = entity.GetType();
+        var attributes = memberInfo.GetCustomAttributes(true);
 
-            var version = 1; // DefaultVersion
+        var version = 1; // DefaultVersion
 
-            foreach (var attribute in attributes)
+        foreach (var attribute in attributes)
+            if (attribute is SchemaVersionAttribute schemaVersionAttribute)
             {
-                if (attribute is SchemaVersionAttribute schemaVersionAttribute)
-                {
-                    version = schemaVersionAttribute.Version;
-                    break;
-                }
+                version = schemaVersionAttribute.Version;
+                break;
             }
 
-            entity.SchemaVersion = version;
-        }
+        entity.SchemaVersion = version;
     }
 }

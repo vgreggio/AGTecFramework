@@ -1,17 +1,17 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Title>AGTec.Common.Test</Title>
-    <Authors>Victor Gregegio</Authors>
-    <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
-    <RepositoryType>git</RepositoryType>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net6.0</TargetFramework>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>AGTec.Common.Test</Title>
+        <Authors>Victor Gregegio</Authors>
+        <RepositoryUrl>https://github.com/vgreggio/AGTecFramework</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="AutoMoqCore" Version="2.1.0" />
-    <PackageReference Include="MSTest.TestFramework" Version="2.2.10" />
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="AutoMoqCore" Version="2.1.0"/>
+        <PackageReference Include="MSTest.TestFramework" Version="2.2.10"/>
+    </ItemGroup>
 
 </Project>

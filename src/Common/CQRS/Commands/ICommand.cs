@@ -1,5 +1,5 @@
-﻿namespace AGTec.Common.CQRS.Commands
+﻿namespace AGTec.Common.CQRS.Commands;
+
+public interface ICommand
 {
-    public interface ICommand
-    { }
 }

@@ -1,13 +1,12 @@
 ﻿using System;
 
-namespace AGTec.Common.CQRS.Messaging
+namespace AGTec.Common.CQRS.Messaging;
+
+public interface IMessage
 {
-    public interface IMessage
-    {
-        Guid Id { get; }
-        string Label { get; }
-        string Version { get; }
-        string Type { get; }
-        string Payload { get; }
-    }
+    Guid Id { get; }
+    string Label { get; }
+    string Version { get; }
+    string Type { get; }
+    string Payload { get; }
 }

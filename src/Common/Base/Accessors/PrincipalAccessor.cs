@@ -5,7 +5,7 @@ namespace AGTec.Common.Base.Accessors;
 
 public static class PrincipalAccessor
 {
-    private static readonly AsyncLocal<IPrincipal> _principal = new AsyncLocal<IPrincipal>();
+    private static readonly AsyncLocal<IPrincipal> _principal = new();
 
     public static IPrincipal Principal
     {

@@ -1,5 +1,5 @@
-﻿namespace AGTec.Common.CQRS.Queries
+﻿namespace AGTec.Common.CQRS.Queries;
+
+public interface IQuery<out TResult>
 {
-    public interface IQuery<out TResult>
-    { }
 }

@@ -1,41 +1,35 @@
-﻿using AGTec.Microservice.Auth.Configuration;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using AGTec.Microservice.Auth.Configuration;
 using AGTec.Microservice.Auth.Requirements;
 using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AGTec.Microservice.Auth.Handlers
+namespace AGTec.Microservice.Auth.Handlers;
+
+internal class ClaimOrScopeAuthorizationHandler : AuthorizationHandler<ClaimOrScopeAuthorizationRequirement>
 {
-    class ClaimOrScopeAuthorizationHandler : AuthorizationHandler<ClaimOrScopeAuthorizationRequirement>
+    private const string ScopeClaim = "scope";
+    private const string LocalAuthIssuer = "LOCAL AUTHORITY";
+    private readonly string _authIssuer;
+
+    public ClaimOrScopeAuthorizationHandler(IAuthConfiguration authConfiguration)
     {
-        private const string ScopeClaim = "scope";
-        private const string LocalAuthIssuer = "LOCAL AUTHORITY";
-        private readonly string _authIssuer;
+        _authIssuer = authConfiguration.AuthIssuer;
+    }
 
-        public ClaimOrScopeAuthorizationHandler(IAuthConfiguration authConfiguration)
-        {
-            _authIssuer = authConfiguration.AuthIssuer;
-        }
-
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-            ClaimOrScopeAuthorizationRequirement requirement)
-        {
-            if (context.User.HasClaim(c =>
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        ClaimOrScopeAuthorizationRequirement requirement)
+    {
+        if (context.User.HasClaim(c =>
                 (c.Issuer == _authIssuer || c.Issuer == LocalAuthIssuer) &&
                 c.Type == requirement.ClaimType))
-            {
-                context.Succeed(requirement);
-            }
+            context.Succeed(requirement);
 
-            if (context.User.HasClaim(c =>
+        if (context.User.HasClaim(c =>
                 (c.Issuer == _authIssuer || c.Issuer == LocalAuthIssuer) &&
                 c.Type == ScopeClaim && requirement.AllowedScopes.Contains(c.Value)))
-            {
-                context.Succeed(requirement);
-            }
+            context.Succeed(requirement);
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

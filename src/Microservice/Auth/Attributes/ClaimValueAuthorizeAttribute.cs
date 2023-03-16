@@ -1,25 +1,24 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System;
+﻿using System;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
 
-namespace AGTec.Microservice.Auth.Attributes
+namespace AGTec.Microservice.Auth.Attributes;
+
+public class ClaimValueAuthorizeAttribute : AuthorizeAttribute
 {
-    public class ClaimValueAuthorizeAttribute : AuthorizeAttribute
+    public const string POLICY_PREFIX = "ClaimValueAuthorize";
+
+    public ClaimValueAuthorizeAttribute(string claim, params string[] values)
     {
-        public const string POLICY_PREFIX = "ClaimValueAuthorize";
+        if (string.IsNullOrWhiteSpace(claim)
+            || values.Length <= 0
+            || values.Any(v => string.IsNullOrWhiteSpace(v)))
+            throw new Exception("Invalid claim and/or value(s).");
 
-        public ClaimValueAuthorizeAttribute(string claim, params string[] values)
-        {
-            if (string.IsNullOrWhiteSpace(claim)
-                || values.Length <= 0
-                || values.Any(v => string.IsNullOrWhiteSpace(v)))
-                throw new Exception("Invalid claim and/or value(s).");
-
-            Values = values;
-            Policy = $"{POLICY_PREFIX}{claim}|{string.Join("|", values)}";
-        }
-
-        public string Claim { get; set; }
-        public string[] Values { get; set; }
+        Values = values;
+        Policy = $"{POLICY_PREFIX}{claim}|{string.Join("|", values)}";
     }
+
+    public string Claim { get; set; }
+    public string[] Values { get; set; }
 }

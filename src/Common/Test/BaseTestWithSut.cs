@@ -1,34 +1,32 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace AGTec.Common.Test
+namespace AGTec.Common.Test;
+
+[TestClass]
+public abstract class BaseTestWithSut<TSut>
+    : BaseTest
 {
-    [TestClass]
-    public abstract class BaseTestWithSut<TSut>
-            : BaseTest
+    protected TSut Sut { get; set; }
+
+    [TestInitialize]
+    public override void SetUp()
     {
+        base.SetUp();
 
-        protected TSut Sut { get; set; }
+        BeforeCreateSut();
 
-        [TestInitialize]
-        public override void SetUp()
-        {
-            base.SetUp();
+        Sut = CreateSut();
 
-            this.BeforeCreateSut();
-
-            this.Sut = this.CreateSut();
-
-            this.AfterCreateSut();
-        }
-
-        protected virtual void BeforeCreateSut()
-        {
-        }
-
-        protected virtual void AfterCreateSut()
-        {
-        }
-
-        protected abstract TSut CreateSut();
+        AfterCreateSut();
     }
+
+    protected virtual void BeforeCreateSut()
+    {
+    }
+
+    protected virtual void AfterCreateSut()
+    {
+    }
+
+    protected abstract TSut CreateSut();
 }

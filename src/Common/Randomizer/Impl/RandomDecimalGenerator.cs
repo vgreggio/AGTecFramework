@@ -21,48 +21,33 @@ public class RandomDecimalGenerator : RandomGenericGeneratorBase<decimal>, IRand
 
     public decimal GenerateValue(decimal min, decimal max)
     {
-        if (min >= max)
-        {
-            throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
-        }
+        if (min >= max) throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
 
-        if (IsConditionToReachLimit())
-        {
-            return max;
-        }
+        if (IsConditionToReachLimit()) return max;
 
-        decimal randomDecimal = (decimal)randomizer.NextDouble();
+        var randomDecimal = (decimal)randomizer.NextDouble();
         return min + randomDecimal * max - randomDecimal * min;
     }
 
     public decimal GeneratePositiveValue()
     {
-        if (IsConditionToReachLimit())
-        {
-            return decimal.MaxValue;
-        }
+        if (IsConditionToReachLimit()) return decimal.MaxValue;
 
         return (decimal)randomizer.NextDouble() * decimal.MaxValue;
     }
 
     public decimal GenerateNegativeValue()
     {
-        if (IsConditionToReachLimit())
-        {
-            return decimal.MinValue;
-        }
+        if (IsConditionToReachLimit()) return decimal.MinValue;
 
         return (decimal)randomizer.NextDouble() * decimal.MinValue;
     }
 
     protected override decimal GetRandomValue()
     {
-        decimal randomPositive = (decimal)randomizer.NextDouble() * decimal.MaxValue;
-        decimal randomNegative = (decimal)randomizer.NextDouble() * decimal.MinValue;
-        if (IsConditionToReachLimit())
-        {
-            return decimal.MaxValue;
-        }
+        var randomPositive = (decimal)randomizer.NextDouble() * decimal.MaxValue;
+        var randomNegative = (decimal)randomizer.NextDouble() * decimal.MinValue;
+        if (IsConditionToReachLimit()) return decimal.MaxValue;
 
         return randomNegative + randomPositive;
     }

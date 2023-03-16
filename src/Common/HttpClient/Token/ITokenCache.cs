@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace AGTec.Common.HttpClient.Token
+namespace AGTec.Common.HttpClient.Token;
+
+public interface ITokenCache
 {
-    public interface ITokenCache
-    {
-        Task<string> GetAccessToken(bool forceRefresh = false);
-    }
+    Task<string> GetAccessToken(bool forceRefresh = false);
 }

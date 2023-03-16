@@ -7,10 +7,12 @@ public class OrNotSpecification<T> : CompositeSpecification<T>
 
     public OrNotSpecification(ISpecification<T> left, ISpecification<T> right)
     {
-        this._left = left;
-        this._right = right;
+        _left = left;
+        _right = right;
     }
 
-    public override bool IsSatisfiedBy(T candidate) =>
-        _left.IsSatisfiedBy(candidate) || _right.IsSatisfiedBy(candidate) != true;
+    public override bool IsSatisfiedBy(T candidate)
+    {
+        return _left.IsSatisfiedBy(candidate) || _right.IsSatisfiedBy(candidate) != true;
+    }
 }

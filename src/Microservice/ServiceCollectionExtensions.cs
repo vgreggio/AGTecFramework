@@ -1,3 +1,7 @@
+using System;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using AGTec.Common.BackgroundTaskQueue;
 using AGTec.Common.Monitor;
 using AGTec.Microservice.Auth.Configuration;
@@ -18,183 +22,177 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using Polly;
 using Polly.Extensions.Http;
-using System;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 
-namespace AGTec.Microservice
+namespace AGTec.Microservice;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    private const string Retry = "DefaultRetryPolicy";
+    private const string Tiemout = "DefaultTimeoutPolicy";
+
+    public static IServiceCollection AddAGTecMicroservice(this IServiceCollection services,
+        IConfiguration configuration, IHostEnvironment hostEnv)
     {
-        private const string Retry = "DefaultRetryPolicy";
-        private const string Tiemout = "DefaultTimeoutPolicy";
+        services.AddCommonAGTecMicroservice(configuration, hostEnv);
+        services.AddHealthChecks();
+        return services;
+    }
 
-        public static IServiceCollection AddAGTecMicroservice(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnv)
+    public static IServiceCollection AddAGTecMicroservice<TContext>(this IServiceCollection services,
+        IConfiguration configuration, IHostEnvironment hostEnv) where TContext : DbContext
+    {
+        services.AddCommonAGTecMicroservice(configuration, hostEnv);
+        services.AddHealthChecks().AddDbContextCheck<TContext>();
+        return services;
+    }
+
+    private static IServiceCollection AddCommonAGTecMicroservice(this IServiceCollection services,
+        IConfiguration configuration, IHostEnvironment hostEnv)
+    {
+        // InMemory Cache
+        services.AddMemoryCache();
+        services.AddTransient<ICacheProvider, InMemoryCacheProvider>();
+
+        // CORS
+        var allowedOrigins = configuration.GetChildren().Any(child => child.Key == "AllowedOrigins")
+            ? configuration.GetSection("AllowedOrigins").Get<string[]>()
+            : new[] { "http://localhost", "https://localhost" };
+
+        services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
+            builder
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithOrigins(allowedOrigins)
+                .AllowCredentials())
+        );
+
+        // API Versioning
+        services.AddApiVersioning(setup =>
         {
-            services.AddCommonAGTecMicroservice(configuration, hostEnv);
-            services.AddHealthChecks();
-            return services;
-        }
+            setup.DefaultApiVersion = new ApiVersion(1, 0);
+            setup.AssumeDefaultVersionWhenUnspecified = true;
+            setup.ReportApiVersions = true;
+        });
 
-        public static IServiceCollection AddAGTecMicroservice<TContext>(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnv) where TContext : DbContext
-        {
-            services.AddCommonAGTecMicroservice(configuration, hostEnv);
-            services.AddHealthChecks().AddDbContextCheck<TContext>();
-            return services;
-        }
-
-        private static IServiceCollection AddCommonAGTecMicroservice(this IServiceCollection services, IConfiguration configuration, IHostEnvironment hostEnv)
-        {
-            // InMemory Cache
-            services.AddMemoryCache();
-            services.AddTransient<ICacheProvider, InMemoryCacheProvider>();
-
-            // CORS
-            var allowedOrigins = configuration.GetChildren().Any(child => child.Key == "AllowedOrigins")
-                ? configuration.GetSection("AllowedOrigins").Get<string[]>()
-                : new string[] { "http://localhost", "https://localhost" };
-
-            services.AddCors(options => options.AddPolicy("CorsPolicy", builder =>
-                builder
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .WithOrigins(allowedOrigins)
-                    .AllowCredentials())
-            );
-
-            // API Versioning
-            services.AddApiVersioning(setup =>
+        // API Doc
+        services.AddVersionedApiExplorer(
+            options =>
             {
-                setup.DefaultApiVersion = new ApiVersion(1, 0);
-                setup.AssumeDefaultVersionWhenUnspecified = true;
-                setup.ReportApiVersions = true;
+                options.GroupNameFormat = "'v'VVV";
+                options.SubstituteApiVersionInUrl = true;
             });
 
-            // API Doc
-            services.AddVersionedApiExplorer(
-                options =>
-                {
-                    options.GroupNameFormat = "'v'VVV";
-                    options.SubstituteApiVersionInUrl = true;
-                });
-
-            services.AddSwaggerGen(
-                options =>
-                {
-                    var provider = services.BuildServiceProvider()
-                        .GetRequiredService<IApiVersionDescriptionProvider>();
-
-                    foreach (var description in provider.ApiVersionDescriptions)
-                    {
-                        options.SwaggerDoc(
-                            description.GroupName,
-                            new OpenApiInfo()
-                            {
-                                Title = $"{description.ApiVersion}",
-                                Version = description.ApiVersion.ToString()
-                            });
-                    }
-                    options.OperationFilter<SwaggerDefaultValues>();
-                });
-
-            // Monitor
-            services.AddAGTecMonitor(hostEnv);
-            
-            // CorrelationId
-            services.AddCorrelate(options =>
-                options.RequestHeaders = new[]
-                {
-                    "X-Correlation-ID"
-                });
-
-            // Authentication / Authorization
-            services.AddAuth(configuration);
-
-            // HTTPClient Policies
-            services.AddHttpClientPolicies();
-
-            // Queued Tasks
-            services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
-            
-            // Controllers with Action Filters
-            services.AddControllersWithViews(opts =>
+        services.AddSwaggerGen(
+            options =>
             {
-                opts.Filters.Add<InvalidModelStateFilter>();
-                opts.Filters.Add<CorrelationIdFilter>();
-            }).AddNewtonsoftJson();
+                var provider = services.BuildServiceProvider()
+                    .GetRequiredService<IApiVersionDescriptionProvider>();
 
-            // Application Insights
-            if (configuration.GetChildren().Any(child => child.Key.Equals("ApplicationInsights")))
-                services.AddApplicationInsightsTelemetry(configuration);
+                foreach (var description in provider.ApiVersionDescriptions)
+                    options.SwaggerDoc(
+                        description.GroupName,
+                        new OpenApiInfo
+                        {
+                            Title = $"{description.ApiVersion}",
+                            Version = description.ApiVersion.ToString()
+                        });
+                options.OperationFilter<SwaggerDefaultValues>();
+            });
 
-            return services;
-        }
+        // Monitor
+        services.AddAGTecMonitor(hostEnv);
 
-        private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+        // CorrelationId
+        services.AddCorrelate(options =>
+            options.RequestHeaders = new[]
+            {
+                "X-Correlation-ID"
+            });
+
+        // Authentication / Authorization
+        services.AddAuth(configuration);
+
+        // HTTPClient Policies
+        services.AddHttpClientPolicies();
+
+        // Queued Tasks
+        services.AddSingleton<IBackgroundTaskQueue, BackgroundTaskQueue>();
+
+        // Controllers with Action Filters
+        services.AddControllersWithViews(opts =>
         {
-            if (configuration.GetChildren().Any(child => child.Key.Equals(AuthConfiguration.ConfigSectionName)) == false)
-                throw new Exception("Auth Configuration section not found.");
+            opts.Filters.Add<InvalidModelStateFilter>();
+            opts.Filters.Add<CorrelationIdFilter>();
+        }).AddNewtonsoftJson();
 
-            var authConfiguration =
-                configuration.GetSection(AuthConfiguration.ConfigSectionName).Get<AuthConfiguration>();
+        // Application Insights
+        if (configuration.GetChildren().Any(child => child.Key.Equals("ApplicationInsights")))
+            services.AddApplicationInsightsTelemetry(configuration);
 
-            if (authConfiguration.IsValid() == false)
-                throw new Exception($"Configuration section '{AuthConfiguration.ConfigSectionName}' not found.");
+        return services;
+    }
 
-            services.AddSingleton<IAuthConfiguration>(authConfiguration);
+    private static IServiceCollection AddAuth(this IServiceCollection services, IConfiguration configuration)
+    {
+        if (configuration.GetChildren().Any(child => child.Key.Equals(AuthConfiguration.ConfigSectionName)) == false)
+            throw new Exception("Auth Configuration section not found.");
 
-            services.AddAuthentication(options =>
+        var authConfiguration =
+            configuration.GetSection(AuthConfiguration.ConfigSectionName).Get<AuthConfiguration>();
+
+        if (authConfiguration.IsValid() == false)
+            throw new Exception($"Configuration section '{AuthConfiguration.ConfigSectionName}' not found.");
+
+        services.AddSingleton<IAuthConfiguration>(authConfiguration);
+
+        services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
-                .AddJwtBearer(options =>
+            .AddJwtBearer(options =>
+            {
+                options.Authority = authConfiguration.AuthorityIdentity;
+                options.Audience = authConfiguration.Audience;
+                options.SaveToken = true;
+                options.Events = new JwtBearerEvents
                 {
-                    options.Authority = authConfiguration.AuthorityIdentity;
-                    options.Audience = authConfiguration.Audience;
-                    options.SaveToken = true;
-                    options.Events = new JwtBearerEvents
+                    // Needed for SignalR when using Websocket Protocol
+                    OnMessageReceived = context =>
                     {
-                        // Needed for SignalR when using Websocket Protocol
-                        OnMessageReceived = context =>
-                        {
-                            var accessToken = context.Request.Query["access_token"];
+                        var accessToken = context.Request.Query["access_token"];
 
-                            if (string.IsNullOrWhiteSpace(accessToken) == false)
-                            {
-                                context.Token = accessToken;
-                            }
+                        if (string.IsNullOrWhiteSpace(accessToken) == false) context.Token = accessToken;
 
-                            return Task.CompletedTask;
-                        }
-                    };
-                });
-
-            services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
-            services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();
-            services.AddSingleton<IAuthorizationHandler, ClaimOrScopeAuthorizationHandler>();
-            services.AddSingleton<IAuthorizationHandler, ClaimAuthorizationHandler>();
-            services.AddSingleton<IAuthorizationHandler, ClaimValueAuthorizationHandler>();
-
-            return services;
-        }
-
-        private static IServiceCollection AddHttpClientPolicies(this IServiceCollection services)
-        {
-            var registry = services.AddPolicyRegistry();
-            var retry = HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(new[] {
-                TimeSpan.FromSeconds (1),
-                TimeSpan.FromSeconds (5),
-                TimeSpan.FromSeconds (10)
+                        return Task.CompletedTask;
+                    }
+                };
             });
 
-            var timeout = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(10));
+        services.AddSingleton<IAuthorizationPolicyProvider, AuthorizationPolicyProvider>();
+        services.AddSingleton<IAuthorizationHandler, ScopeAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, ClaimOrScopeAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, ClaimAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, ClaimValueAuthorizationHandler>();
 
-            registry.Add(Retry, retry);
-            registry.Add(Tiemout, timeout);
+        return services;
+    }
 
-            return services;
-        }
+    private static IServiceCollection AddHttpClientPolicies(this IServiceCollection services)
+    {
+        var registry = services.AddPolicyRegistry();
+        var retry = HttpPolicyExtensions.HandleTransientHttpError().WaitAndRetryAsync(new[]
+        {
+            TimeSpan.FromSeconds(1),
+            TimeSpan.FromSeconds(5),
+            TimeSpan.FromSeconds(10)
+        });
+
+        var timeout = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromSeconds(10));
+
+        registry.Add(Retry, retry);
+        registry.Add(Tiemout, timeout);
+
+        return services;
     }
 }

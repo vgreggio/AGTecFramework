@@ -1,17 +1,16 @@
 using System;
 
-namespace AGTec.Common.Domain.Entities
+namespace AGTec.Common.Domain.Entities;
+
+public interface IEntity
 {
-    public interface IEntity
-    {
-        Guid Id { get; }
+    Guid Id { get; }
 
-        DateTime Created { get; set; }
+    DateTime Created { get; set; }
 
-        DateTime LastUpdated { get; set; }
+    DateTime LastUpdated { get; set; }
 
-        string UpdatedBy { get; set; }
-        
-        byte[] Version { get; set; }
-    }
+    string UpdatedBy { get; set; }
+
+    byte[] Version { get; set; }
 }

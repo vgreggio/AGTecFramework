@@ -8,5 +8,4 @@ public interface ISearchDbConfiguration
     string Username { get; }
     string Password { get; }
     IEnumerable<string> Hosts { get; }
-
 }

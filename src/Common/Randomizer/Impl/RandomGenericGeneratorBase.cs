@@ -8,12 +8,14 @@ public abstract class RandomGenericGeneratorBase<T> : RandomGeneratorBase
 
 {
     protected RandomGenericGeneratorBase()
-    { }
+    {
+    }
 
     protected RandomGenericGeneratorBase(int seed)
         : base(seed)
 
-    { }
+    {
+    }
 
     public virtual T GenerateValueWithin(params T[] values)
     {
@@ -21,9 +23,9 @@ public abstract class RandomGenericGeneratorBase<T> : RandomGeneratorBase
         Validator.ValidateCondition(values, item => values.Length > 0);
         Validator.ValidateCondition(values, item => values.Length > 1);
 
-        int numberOfItemsToRandom = values.Length;
+        var numberOfItemsToRandom = values.Length;
 
-        int randomIndex = randomizer.Next(0, numberOfItemsToRandom - 1);
+        var randomIndex = randomizer.Next(0, numberOfItemsToRandom - 1);
 
         return values[randomIndex];
     }
@@ -38,5 +40,6 @@ public abstract class RandomGenericGeneratorBase<T> : RandomGeneratorBase
 
         return randomValue;
     }
+
     protected abstract T GetRandomValue();
 }

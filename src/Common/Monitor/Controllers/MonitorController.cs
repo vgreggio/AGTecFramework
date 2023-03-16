@@ -7,18 +7,18 @@ namespace AGTec.Common.Monitor.Controllers;
 
 [AllowAnonymous]
 [Route("[controller]")]
-public class MonitorController: Controller
+public class MonitorController : Controller
 {
     private readonly IBackgroundTaskQueue _backgroundTaskQueue;
     private readonly ILogger<MonitorController> _logger;
 
-    public MonitorController(IBackgroundTaskQueue backgroundTaskQueue, 
+    public MonitorController(IBackgroundTaskQueue backgroundTaskQueue,
         ILogger<MonitorController> logger)
     {
         _backgroundTaskQueue = backgroundTaskQueue;
         _logger = logger;
     }
-    
+
     [Route("profiler")]
     public IActionResult MiniProfiler()
     {
@@ -31,14 +31,14 @@ public class MonitorController: Controller
         var queuedTasks = _backgroundTaskQueue.QueuedTasks;
         return View(queuedTasks);
     }
-    
+
     [Route("queue/pause")]
     public IActionResult PauseQueue()
     {
         _backgroundTaskQueue.Pause();
         return Content("Queue stopped.");
     }
-    
+
     [Route("queue/restart")]
     public IActionResult RestartQueue()
     {

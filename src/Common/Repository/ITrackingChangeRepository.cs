@@ -1,9 +1,8 @@
 ﻿using System;
 
-namespace AGTec.Common.Repository
+namespace AGTec.Common.Repository;
+
+public interface ITrackingChangeRepository : IDisposable
 {
-    public interface ITrackingChangeRepository : IDisposable
-    {
-        bool AutoDetectChanges { get; set; }
-    }
+    bool AutoDetectChanges { get; set; }
 }

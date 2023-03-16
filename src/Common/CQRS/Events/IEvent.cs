@@ -1,5 +1,5 @@
-namespace AGTec.Common.CQRS.Events
+namespace AGTec.Common.CQRS.Events;
+
+public interface IEvent
 {
-    public interface IEvent
-    { }
 }

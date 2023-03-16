@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace AGTec.Common.CQRS.Messaging
+namespace AGTec.Common.CQRS.Messaging;
+
+public interface IMessagePublisher
 {
-    public interface IMessagePublisher
-    {
-        Task Publish(string destName, PublishType type, IMessage message);
-    }
+    Task Publish(string destName, PublishType type, IMessage message);
 }

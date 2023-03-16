@@ -21,45 +21,30 @@ public class RandomIntegerGenerator : RandomGenericGeneratorBase<int>, IRandomIn
 
     public int GenerateValue(int min, int max)
     {
-        if (min > max)
-        {
-            throw new ArgumentException("Min cannot be greater than max.");
-        }
+        if (min > max) throw new ArgumentException("Min cannot be greater than max.");
 
-        if (IsConditionToReachLimit())
-        {
-            return max;
-        }
+        if (IsConditionToReachLimit()) return max;
 
         return randomizer.Next(min, max);
     }
 
     public int GeneratePositiveValue()
     {
-        if (IsConditionToReachLimit())
-        {
-            return int.MaxValue;
-        }
+        if (IsConditionToReachLimit()) return int.MaxValue;
 
         return randomizer.Next(0, int.MaxValue);
     }
 
     public int GenerateNegativeValue()
     {
-        if (IsConditionToReachLimit())
-        {
-            return 0;
-        }
+        if (IsConditionToReachLimit()) return 0;
 
         return randomizer.Next(int.MinValue, 0);
     }
 
     protected override int GetRandomValue()
     {
-        if (IsConditionToReachLimit())
-        {
-            return int.MaxValue;
-        }
+        if (IsConditionToReachLimit()) return int.MaxValue;
 
         return randomizer.Next();
     }

@@ -6,10 +6,8 @@ using Elastic.Transport;
 
 namespace AGTec.Common.Repository.Search;
 
-public class SearchContext: ISearchContext
+public class SearchContext : ISearchContext
 {
-    private readonly ElasticsearchClient _client;
-    
     public SearchContext(ISearchDbConfiguration configuration)
     {
         var pool = new StaticNodePool(configuration.Hosts.Select(host => new Uri(host)));
@@ -18,15 +16,17 @@ public class SearchContext: ISearchContext
             .CertificateFingerprint(configuration.CertificateFingerprint)
             .Authentication(new BasicAuthentication(configuration.Username, configuration.Password));
 
-        _client = new ElasticsearchClient(settings);
+        Client = new ElasticsearchClient(settings);
     }
 
-    public ElasticsearchClient Client => _client;
+    public ElasticsearchClient Client { get; }
 
     #region IDisposable
+
     public void Dispose()
     {
         GC.SuppressFinalize(this);
     }
+
     #endregion
 }

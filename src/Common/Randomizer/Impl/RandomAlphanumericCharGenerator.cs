@@ -7,10 +7,10 @@ public class RandomAlphanumericCharGenerator : RandomGenericGeneratorBase<char>,
 {
     public RandomAlphanumericCharGenerator()
     {
-            
     }
+
     public RandomAlphanumericCharGenerator(int seed)
-        :base(seed)
+        : base(seed)
     {
     }
 
@@ -21,26 +21,20 @@ public class RandomAlphanumericCharGenerator : RandomGenericGeneratorBase<char>,
 
     public char GenerateValue(char min, char max)
     {
-        if (IsConditionToReachLimit())
-        {
-            return max;
-        }
+        if (IsConditionToReachLimit()) return max;
 
-        int firstIndex = Constants.AlphanumericCharacters.IndexOf(min);
-        int lastIndex = Constants.AlphanumericCharacters.IndexOf(max);
+        var firstIndex = Constants.AlphanumericCharacters.IndexOf(min);
+        var lastIndex = Constants.AlphanumericCharacters.IndexOf(max);
 
-        if (firstIndex >= lastIndex)
-        {
-            throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
-        }
+        if (firstIndex >= lastIndex) throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
 
-        int randomIndex = randomizer.Next(firstIndex, lastIndex);
+        var randomIndex = randomizer.Next(firstIndex, lastIndex);
         return Constants.AlphanumericCharArray[randomIndex];
     }
 
     protected override char GetRandomValue()
     {
-        int indexofCharacter = randomizer.Next(0, Constants.AlphanumericCharacters.Length - 1);
+        var indexofCharacter = randomizer.Next(0, Constants.AlphanumericCharacters.Length - 1);
         return Constants.AlphanumericCharArray[indexofCharacter];
     }
 }

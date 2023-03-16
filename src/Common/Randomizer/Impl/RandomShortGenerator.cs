@@ -7,12 +7,13 @@ public class RandomShortGenerator : RandomGenericGeneratorBase<short>, IRandomSh
 {
     public RandomShortGenerator()
     {
-            
     }
+
     public RandomShortGenerator(int seed)
         : base(seed)
-    { }
-        
+    {
+    }
+
     public short GenerateValue()
     {
         return GetRandomValue();
@@ -20,45 +21,30 @@ public class RandomShortGenerator : RandomGenericGeneratorBase<short>, IRandomSh
 
     public short GenerateValue(short min, short max)
     {
-        if (min >= max)
-        {
-            throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
-        }
-        if (IsConditionToReachLimit())
-        {
-            return min;
-        }
-        return (short) randomizer.Next(min, max);
+        if (min >= max) throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
+        if (IsConditionToReachLimit()) return min;
+        return (short)randomizer.Next(min, max);
     }
 
     public short GeneratePositiveValue()
     {
-        if (IsConditionToReachLimit())
-        {
-            return short.MaxValue;
-        }
+        if (IsConditionToReachLimit()) return short.MaxValue;
 
         return (short)randomizer.Next(0, short.MaxValue);
     }
 
     public short GenerateNegativeValue()
     {
-        if (IsConditionToReachLimit())
-        {
-            return 0;
-        }
+        if (IsConditionToReachLimit()) return 0;
 
         return (short)randomizer.Next(short.MinValue, 0);
     }
 
     protected override short GetRandomValue()
     {
-        short randomPositive = (short)randomizer.Next(0, short.MaxValue);
-        short randomNegative = (short)randomizer.Next(short.MinValue, 0);
-        if (IsConditionToReachLimit())
-        {
-            return short.MaxValue;
-        }
+        var randomPositive = (short)randomizer.Next(0, short.MaxValue);
+        var randomNegative = (short)randomizer.Next(short.MinValue, 0);
+        if (IsConditionToReachLimit()) return short.MaxValue;
 
         return (short)(randomPositive + randomNegative);
     }

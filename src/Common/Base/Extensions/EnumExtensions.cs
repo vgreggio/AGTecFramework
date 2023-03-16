@@ -31,7 +31,6 @@ public static class EnumExtensions
         if (!type.IsEnum) throw new InvalidOperationException();
 
         foreach (var field in type.GetFields())
-        {
             if (Attribute.GetCustomAttribute(field,
                     typeof(DescriptionAttribute)) is DescriptionAttribute attribute)
             {
@@ -43,7 +42,6 @@ public static class EnumExtensions
                 if (field.Name == value)
                     return (T)field.GetValue(null);
             }
-        }
 
         throw new ArgumentException("Not found.", nameof(value));
     }

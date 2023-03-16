@@ -24,12 +24,29 @@ public class RandomDateTimeGenerator : RandomGenericGeneratorBase<DateTime>, IRa
         return RandomRangeDate(min, max);
     }
 
+    public DateTime GeneratePositiveValue()
+    {
+        var now = DateTime.Now;
+        var randomYear = randomizer.Next(now.Year + 1, DateTime.MaxValue.Year + 1);
+        var randomMonth = randomizer.Next(1, 13);
+        var randomDay = RandomDay(randomYear, randomMonth);
+        return new DateTime(randomYear, randomMonth, randomDay);
+    }
+
+    public DateTime GenerateNegativeValue()
+    {
+        var now = DateTime.Now;
+
+        var randomYear = randomizer.Next(1, now.Year - 1);
+        var randomMonth = randomizer.Next(1, 13);
+        var randomDay = RandomDay(randomYear, randomMonth);
+
+        return new DateTime(randomYear, randomMonth, randomDay);
+    }
+
     private DateTime RandomRangeDate(DateTime min, DateTime max)
     {
-        if (min >= max)
-        {
-            throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
-        }
+        if (min >= max) throw new ArgumentException(Constants.MinMaxValueExceptionMsg);
 
         if (min.Year == max.Year && min.Month == max.Month && min.Day == max.Day && min.Hour == max.Hour &&
             min.Minute == max.Minute &&
@@ -52,31 +69,18 @@ public class RandomDateTimeGenerator : RandomGenericGeneratorBase<DateTime>, IRa
 
         if (min.Year == max.Year && min.Month == max.Month && min.Day == max.Day && min.Hour == max.Hour &&
             min.Minute < max.Minute)
-        {
-            return this.RandomSeconds(min, max);
-        }
+            return RandomSeconds(min, max);
 
         if (min.Year == max.Year && min.Month == max.Month && min.Day == max.Day && min.Hour < max.Hour)
-        {
-            return this.RandomMinutes(min, max);
-        }
+            return RandomMinutes(min, max);
 
 
-        if (min.Year == max.Year && min.Month == max.Month && min.Day < max.Day)
-        {
-            return this.RandomHours(min, max);
-        }
+        if (min.Year == max.Year && min.Month == max.Month && min.Day < max.Day) return RandomHours(min, max);
 
-        if (min.Year == max.Year && min.Month < max.Month)
-        {
-            return this.RandomDays(min, max);
-        }
+        if (min.Year == max.Year && min.Month < max.Month) return RandomDays(min, max);
 
 
-        if (min.Year < max.Year)
-        {
-            return this.RandomMonths(min, max);
-        }
+        if (min.Year < max.Year) return RandomMonths(min, max);
 
         throw new Exception("This is not a valid condition.");
     }
@@ -163,34 +167,22 @@ public class RandomDateTimeGenerator : RandomGenericGeneratorBase<DateTime>, IRa
         var randomValue = new DateTime(min.Year, randomMonth, randomDay, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomHour = randomizer.Next(min.Hour, 24);
-        }
+        if (randomValue < min) randomHour = randomizer.Next(min.Hour, 24);
 
         randomValue = new DateTime(min.Year, randomMonth, randomDay, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomMinute = randomizer.Next(min.Minute, 60);
-        }
+        if (randomValue < min) randomMinute = randomizer.Next(min.Minute, 60);
 
         randomValue = new DateTime(min.Year, min.Month, randomDay, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomSecond = randomizer.Next(min.Second, 60);
-        }
+        if (randomValue < min) randomSecond = randomizer.Next(min.Second, 60);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomMillisecond = randomizer.Next(min.Millisecond, 999);
-        }
+        if (randomValue < min) randomMillisecond = randomizer.Next(min.Millisecond, 999);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, randomHour, randomMinute, randomSecond,
             randomMillisecond);
@@ -208,18 +200,12 @@ public class RandomDateTimeGenerator : RandomGenericGeneratorBase<DateTime>, IRa
 
         var randomValue = new DateTime(min.Year, min.Month, min.Day, randomHour, randomMinute, randomSecond,
             randomMillisecond);
-        if (randomValue < min)
-        {
-            randomSecond = randomizer.Next(min.Second, 60);
-        }
+        if (randomValue < min) randomSecond = randomizer.Next(min.Second, 60);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomMillisecond = randomizer.Next(min.Millisecond, 999);
-        }
+        if (randomValue < min) randomMillisecond = randomizer.Next(min.Millisecond, 999);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, randomHour, randomMinute, randomSecond,
             randomMillisecond);
@@ -240,26 +226,17 @@ public class RandomDateTimeGenerator : RandomGenericGeneratorBase<DateTime>, IRa
         var randomValue = new DateTime(min.Year, min.Month, randomDay, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomMinute = randomizer.Next(min.Minute, 60);
-        }
+        if (randomValue < min) randomMinute = randomizer.Next(min.Minute, 60);
 
         randomValue = new DateTime(min.Year, min.Month, randomDay, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomSecond = randomizer.Next(min.Second, 60);
-        }
+        if (randomValue < min) randomSecond = randomizer.Next(min.Second, 60);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, randomHour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomMillisecond = randomizer.Next(min.Millisecond, 999);
-        }
+        if (randomValue < min) randomMillisecond = randomizer.Next(min.Millisecond, 999);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, randomHour, randomMinute, randomSecond,
             randomMillisecond);
@@ -276,49 +253,20 @@ public class RandomDateTimeGenerator : RandomGenericGeneratorBase<DateTime>, IRa
 
         var randomValue = new DateTime(min.Year, min.Month, min.Day, min.Hour, randomMinute, randomSecond,
             randomMillisecond);
-        if (randomValue < min)
-        {
-            randomSecond = randomizer.Next(min.Second, 60);
-        }
+        if (randomValue < min) randomSecond = randomizer.Next(min.Second, 60);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, min.Hour, randomMinute, randomSecond,
             randomMillisecond);
 
-        if (randomValue < min)
-        {
-            randomSecond = randomizer.Next(min.Second, 60);
-        }
+        if (randomValue < min) randomSecond = randomizer.Next(min.Second, 60);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, min.Hour, randomMinute, randomSecond,
             randomMillisecond);
-        if (randomValue < min)
-        {
-            randomMillisecond = randomizer.Next(min.Millisecond, 999);
-        }
+        if (randomValue < min) randomMillisecond = randomizer.Next(min.Millisecond, 999);
 
         randomValue = new DateTime(min.Year, min.Month, min.Day, min.Hour, randomMinute, randomSecond,
             randomMillisecond);
         return randomValue;
-    }
-
-    public DateTime GeneratePositiveValue()
-    {
-        DateTime now = DateTime.Now;
-        var randomYear = randomizer.Next(now.Year + 1, DateTime.MaxValue.Year + 1);
-        var randomMonth = randomizer.Next(1, 13);
-        var randomDay = RandomDay(randomYear, randomMonth);
-        return new DateTime(randomYear, randomMonth, randomDay);
-    }
-
-    public DateTime GenerateNegativeValue()
-    {
-        DateTime now = DateTime.Now;
-
-        var randomYear = randomizer.Next(1, now.Year - 1);
-        var randomMonth = randomizer.Next(1, 13);
-        var randomDay = RandomDay(randomYear, randomMonth);
-
-        return new DateTime(randomYear, randomMonth, randomDay);
     }
 
     private int RandomDay(int year, int month)
@@ -331,6 +279,6 @@ public class RandomDateTimeGenerator : RandomGenericGeneratorBase<DateTime>, IRa
         var minDate = DateTime.MinValue;
         var maxDate = DateTime.MaxValue;
 
-        return this.RandomRangeDate(minDate, maxDate);
+        return RandomRangeDate(minDate, maxDate);
     }
 }

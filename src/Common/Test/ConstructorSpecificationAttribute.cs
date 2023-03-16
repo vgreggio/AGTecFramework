@@ -1,8 +1,7 @@
 ﻿using System;
 
-namespace AGTec.Common.Test
+namespace AGTec.Common.Test;
+
+public class ConstructorSpecificationAttribute : Attribute
 {
-    public class ConstructorSpecificationAttribute : Attribute
-    {
-    }
 }

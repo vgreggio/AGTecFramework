@@ -1,16 +1,15 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 
-namespace AGTec.Microservice.Auth.Requirements
-{
-    class ClaimValueAuthorizationRequirement : IAuthorizationRequirement
-    {
-        public ClaimValueAuthorizationRequirement(string claimType, string[] claimValues)
-        {
-            ClaimType = claimType;
-            ClaimValues = claimValues;
-        }
+namespace AGTec.Microservice.Auth.Requirements;
 
-        public string ClaimType { get; private set; }
-        public string[] ClaimValues { get; private set; }
+internal class ClaimValueAuthorizationRequirement : IAuthorizationRequirement
+{
+    public ClaimValueAuthorizationRequirement(string claimType, string[] claimValues)
+    {
+        ClaimType = claimType;
+        ClaimValues = claimValues;
     }
+
+    public string ClaimType { get; }
+    public string[] ClaimValues { get; }
 }

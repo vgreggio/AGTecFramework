@@ -1,33 +1,29 @@
-﻿using AGTec.Microservice.Auth.Configuration;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using AGTec.Microservice.Auth.Configuration;
 using AGTec.Microservice.Auth.Requirements;
 using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AGTec.Microservice.Auth.Handlers
+namespace AGTec.Microservice.Auth.Handlers;
+
+internal class ClaimAuthorizationHandler : AuthorizationHandler<ClaimAuthorizationRequirement>
 {
-    class ClaimAuthorizationHandler : AuthorizationHandler<ClaimAuthorizationRequirement>
+    private const string LocalAuthIssuer = "LOCAL AUTHORITY";
+    private readonly string _authIssuer;
+
+    public ClaimAuthorizationHandler(IAuthConfiguration authConfiguration)
     {
-        private const string LocalAuthIssuer = "LOCAL AUTHORITY";
-        private readonly string _authIssuer;
+        _authIssuer = authConfiguration.AuthIssuer;
+    }
 
-        public ClaimAuthorizationHandler(IAuthConfiguration authConfiguration)
-        {
-            _authIssuer = authConfiguration.AuthIssuer;
-        }
-
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-            ClaimAuthorizationRequirement requirement)
-        {
-            if (context.User.HasClaim(c =>
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        ClaimAuthorizationRequirement requirement)
+    {
+        if (context.User.HasClaim(c =>
                 (c.Issuer == _authIssuer || c.Issuer == LocalAuthIssuer) &&
-                    requirement.ClaimTypes.Contains(c.Type)))
-            {
-                context.Succeed(requirement);
-            }
+                requirement.ClaimTypes.Contains(c.Type)))
+            context.Succeed(requirement);
 
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

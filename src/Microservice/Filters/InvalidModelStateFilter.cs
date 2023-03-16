@@ -1,31 +1,32 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using System.Linq;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Linq;
 
-namespace AGTec.Microservice.Filters
+namespace AGTec.Microservice.Filters;
+
+public class InvalidModelStateFilter : IActionFilter
 {
-    public class InvalidModelStateFilter : IActionFilter
+    private readonly ILogger<InvalidModelStateFilter> _logger;
+
+    public InvalidModelStateFilter(ILogger<InvalidModelStateFilter> logger)
     {
-        private readonly ILogger<InvalidModelStateFilter> _logger;
+        _logger = logger;
+    }
 
-        public InvalidModelStateFilter(ILogger<InvalidModelStateFilter> logger)
+    public void OnActionExecuted(ActionExecutedContext context)
+    {
+    }
+
+    public void OnActionExecuting(ActionExecutingContext context)
+    {
+        if (context.ModelState.IsValid == false)
         {
-            _logger = logger;
-        }
+            _logger.LogWarning(string.Join(Environment.NewLine,
+                context.ModelState.Values.SelectMany(state => state.Errors).Select(error => error.ErrorMessage)));
 
-        public void OnActionExecuted(ActionExecutedContext context) { }
-
-        public void OnActionExecuting(ActionExecutingContext context)
-        {
-            if (context.ModelState.IsValid == false)
-            {
-                _logger.LogWarning(string.Join(Environment.NewLine,
-                    context.ModelState.Values.SelectMany(state => state.Errors).Select(error => error.ErrorMessage)));
-
-                context.Result = new BadRequestObjectResult(context.ModelState);
-            }
+            context.Result = new BadRequestObjectResult(context.ModelState);
         }
     }
 }

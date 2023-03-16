@@ -1,23 +1,22 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using System;
+﻿using System;
+using Microsoft.AspNetCore.Authorization;
 
-namespace AGTec.Microservice.Auth.Attributes
+namespace AGTec.Microservice.Auth.Attributes;
+
+public class ClaimOrScopeAuthorizeAttribute : AuthorizeAttribute
 {
-    public class ClaimOrScopeAuthorizeAttribute : AuthorizeAttribute
+    public const string POLICY_PREFIX = "ClaimOrScopeAuthorize";
+
+    public ClaimOrScopeAuthorizeAttribute(string claim, string scope)
     {
-        public const string POLICY_PREFIX = "ClaimOrScopeAuthorize";
+        if (string.IsNullOrWhiteSpace(claim) || string.IsNullOrWhiteSpace(scope))
+            throw new Exception("Invalid claim and/or scope.");
 
-        public ClaimOrScopeAuthorizeAttribute(string claim, string scope)
-        {
-            if (string.IsNullOrWhiteSpace(claim) || string.IsNullOrWhiteSpace(scope))
-                throw new Exception("Invalid claim and/or scope.");
-
-            Claim = claim;
-            Scope = scope;
-            Policy = $"{POLICY_PREFIX}{claim}|{scope}";
-        }
-
-        public string Claim { get; set; }
-        public string Scope { get; set; }
+        Claim = claim;
+        Scope = scope;
+        Policy = $"{POLICY_PREFIX}{claim}|{scope}";
     }
+
+    public string Claim { get; set; }
+    public string Scope { get; set; }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 
-namespace AGTec.Common.HttpClient
+namespace AGTec.Common.HttpClient;
+
+public interface IBaseHttpClient : IDisposable
 {
-    public interface IBaseHttpClient : IDisposable { }
 }

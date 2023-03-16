@@ -1,30 +1,27 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AGTec.Common.HttpClient.Configuration
+namespace AGTec.Common.HttpClient.Configuration;
+
+public class BasicAuthEndpointConfiguration : EnpointConfiguration, ISecuredEndpointConfiguration
 {
-    public class BasicAuthEndpointConfiguration : EnpointConfiguration, ISecuredEndpointConfiguration
+    private static readonly string AUTH_SCHEMA = "Basic";
+    private static readonly string SEPARATOR = ":";
+
+    public string Username { get; set; }
+    public string Password { get; set; }
+
+    public Task SetAuthentication(System.Net.Http.HttpClient client)
     {
-        private static readonly string AUTH_SCHEMA = "Basic";
-        private static readonly string SEPARATOR = ":";
+        var base64String = Convert.ToBase64String(
+            Encoding.UTF8.GetBytes(
+                string.Concat(Username, SEPARATOR, Password)));
 
-        public string Username { get; set; }
-        public string Password { get; set; }
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue(AUTH_SCHEMA, base64String);
 
-        public Task SetAuthentication(System.Net.Http.HttpClient client)
-        {
-            var base64String = Convert.ToBase64String(
-                Encoding.UTF8.GetBytes(
-                    string.Concat(Username, SEPARATOR, Password)));
-
-            client.DefaultRequestHeaders.Authorization = 
-                new AuthenticationHeaderValue(AUTH_SCHEMA, base64String);
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

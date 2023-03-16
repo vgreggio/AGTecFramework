@@ -1,14 +1,13 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 
-namespace AGTec.Common.CQRS.Messaging.JsonSerializer
+namespace AGTec.Common.CQRS.Messaging.JsonSerializer;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddJSONMessagingSerializer(this IServiceCollection services)
     {
-        public static IServiceCollection AddJSONMessagingSerializer(this IServiceCollection services)
-        {
-            services.AddTransient<IMessageSerializer, JsonMessageSerializer>();
-            services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
-            return services;
-        }
+        services.AddTransient<IMessageSerializer, JsonMessageSerializer>();
+        services.AddTransient<IPayloadSerializer, JsonPayloadSerializer>();
+        return services;
     }
 }

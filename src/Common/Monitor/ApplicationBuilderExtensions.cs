@@ -7,10 +7,7 @@ public static class ApplicationBuilderExtensions
 {
     public static IApplicationBuilder UseAGTecMonitor(this IApplicationBuilder app, IHostEnvironment hostEnv)
     {
-        if (hostEnv.IsDevelopment())
-        {
-            app.UseMiniProfiler();
-        }
+        if (hostEnv.IsDevelopment()) app.UseMiniProfiler();
 
         return app;
     }

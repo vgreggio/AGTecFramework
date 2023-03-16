@@ -1,7 +1,6 @@
-﻿namespace AGTec.Common.HttpClient.Configuration
+﻿namespace AGTec.Common.HttpClient.Configuration;
+
+public interface IEndpointConfiguration
 {
-    public interface IEndpointConfiguration
-    {
-        string BaseUrl { get; }
-    }
+    string BaseUrl { get; }
 }

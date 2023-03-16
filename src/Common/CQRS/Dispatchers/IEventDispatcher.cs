@@ -1,10 +1,9 @@
-﻿using AGTec.Common.CQRS.Events;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using AGTec.Common.CQRS.Events;
 
-namespace AGTec.Common.CQRS.Dispatchers
+namespace AGTec.Common.CQRS.Dispatchers;
+
+public interface IEventDispatcher
 {
-    public interface IEventDispatcher
-    {
-        Task Raise<TEvent>(TEvent evt) where TEvent : IEvent;
-    }
+    Task Raise<TEvent>(TEvent evt) where TEvent : IEvent;
 }

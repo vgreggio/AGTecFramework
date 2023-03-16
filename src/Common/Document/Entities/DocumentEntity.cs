@@ -1,14 +1,17 @@
-using AGTec.Common.Domain.Entities;
 using System;
+using AGTec.Common.Domain.Entities;
 
-namespace AGTec.Common.Document.Entities
+namespace AGTec.Common.Document.Entities;
+
+public abstract class DocumentEntity : Entity, IDocumentEntity
 {
-    public abstract class DocumentEntity : Entity, IDocumentEntity
+    protected DocumentEntity() : base(Guid.NewGuid())
     {
-        protected DocumentEntity() : base(Guid.NewGuid()) { }
-
-        protected DocumentEntity(Guid id) : base(id) { }
-
-        public int SchemaVersion { get; set; }
     }
+
+    protected DocumentEntity(Guid id) : base(id)
+    {
+    }
+
+    public int SchemaVersion { get; set; }
 }

@@ -11,9 +11,8 @@ namespace AGTec.Common.Repository.Search;
 public abstract class ReadOnlyRepository<TEntity, TContext> : IReadOnlyRepository<TEntity, TContext>
     where TContext : ISearchContext where TEntity : class, IDocumentEntity
 {
-    protected ISearchContext Context;
-    
     protected readonly string CollectionName = typeof(TEntity).Name.ToSnakeCase();
+    protected ISearchContext Context;
 
     protected ReadOnlyRepository(TContext context)
     {
@@ -28,20 +27,21 @@ public abstract class ReadOnlyRepository<TEntity, TContext> : IReadOnlyRepositor
         return response.Source;
     }
 
-    public async Task<IEnumerable<TEntity>> Search<TValue>(Expression<Func<TEntity, TValue>> field, string value, int skip = 0, int top = 10000)
+    public async Task<IEnumerable<TEntity>> Search<TValue>(Expression<Func<TEntity, TValue>> field, string value,
+        int skip = 0, int top = 10000)
     {
-        var response = await Context.Client.SearchAsync<TEntity> (s =>
-            s.Index(CollectionName).From(skip).Size(top).Query(q => 
+        var response = await Context.Client.SearchAsync<TEntity>(s =>
+            s.Index(CollectionName).From(skip).Size(top).Query(q =>
                 q.Match(x => x
                     .Field(field)
                     .Query(value))));
-        
+
         if (response.IsValidResponse == false)
             throw new InvalidResponseException(response.DebugInformation);
-        
+
         return response.Documents;
     }
-    
+
     #region IDisposable
 
     public void Dispose()

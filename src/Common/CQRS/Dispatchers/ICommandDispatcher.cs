@@ -1,10 +1,9 @@
-﻿using AGTec.Common.CQRS.Commands;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using AGTec.Common.CQRS.Commands;
 
-namespace AGTec.Common.CQRS.Dispatchers
+namespace AGTec.Common.CQRS.Dispatchers;
+
+public interface ICommandDispatcher
 {
-    public interface ICommandDispatcher
-    {
-        Task Execute<TCommand>(TCommand command) where TCommand : ICommand;
-    }
+    Task Execute<TCommand>(TCommand command) where TCommand : ICommand;
 }

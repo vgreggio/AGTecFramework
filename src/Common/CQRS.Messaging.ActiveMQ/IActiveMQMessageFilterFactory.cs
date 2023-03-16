@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace AGTec.Common.CQRS.Messaging.ActiveMQ
+namespace AGTec.Common.CQRS.Messaging.ActiveMQ;
+
+public interface IActiveMQMessageFilterFactory
 {
-    public interface IActiveMQMessageFilterFactory
-    {
-        String Create(IEnumerable<IMessageFilter> filters);
-    }
+    string Create(IEnumerable<IMessageFilter> filters);
 }

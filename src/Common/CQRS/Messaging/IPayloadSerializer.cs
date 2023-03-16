@@ -1,8 +1,7 @@
-﻿namespace AGTec.Common.CQRS.Messaging
+﻿namespace AGTec.Common.CQRS.Messaging;
+
+public interface IPayloadSerializer
 {
-    public interface IPayloadSerializer
-    {
-        string Serialize(object payload);
-        T Deserialize<T>(string payload);
-    }
+    string Serialize(object payload);
+    T Deserialize<T>(string payload);
 }

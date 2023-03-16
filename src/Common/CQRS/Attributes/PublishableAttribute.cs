@@ -1,22 +1,21 @@
-﻿using AGTec.Common.CQRS.Messaging;
-using System;
+﻿using System;
+using AGTec.Common.CQRS.Messaging;
 
-namespace AGTec.Common.CQRS.Attributes
+namespace AGTec.Common.CQRS.Attributes;
+
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public class PublishableAttribute : Attribute
 {
-    [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-    public class PublishableAttribute : Attribute
+    public PublishableAttribute(string label, string version, string destName, PublishType type = PublishType.Queue)
     {
-        public PublishableAttribute(string label, string version, string destName, PublishType type = PublishType.Queue)
-        {
-            this.Label = label;
-            this.Version = version;
-            this.DestName = destName;
-            this.Type = type;
-        }
-
-        public string Label { get; }
-        public string Version { get; }
-        public string DestName { get; }
-        public PublishType Type { get; }
+        Label = label;
+        Version = version;
+        DestName = destName;
+        Type = type;
     }
+
+    public string Label { get; }
+    public string Version { get; }
+    public string DestName { get; }
+    public PublishType Type { get; }
 }

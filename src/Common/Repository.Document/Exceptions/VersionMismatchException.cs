@@ -1,9 +1,18 @@
-﻿namespace AGTec.Common.Repository.Document.Exceptions
+﻿using System;
+
+namespace AGTec.Common.Repository.Document.Exceptions;
+
+public class VersionMismatchException : Exception
 {
-    public class VersionMismatchException : System.Exception
+    public VersionMismatchException()
     {
-        public VersionMismatchException() : base() { }
-        public VersionMismatchException(string message) : base(message) { }
-        public VersionMismatchException(string message, System.Exception innerException) : base(message, innerException) { }
+    }
+
+    public VersionMismatchException(string message) : base(message)
+    {
+    }
+
+    public VersionMismatchException(string message, Exception innerException) : base(message, innerException)
+    {
     }
 }

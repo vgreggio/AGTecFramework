@@ -1,5 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StackExchange.Profiling.SqlFormatters;
 
 namespace AGTec.Common.Monitor;
 
@@ -9,13 +10,11 @@ public static class ServiceCollectionExtensions
         IHostEnvironment hostEnv)
     {
         if (hostEnv.IsDevelopment())
-        {
             services.AddMiniProfiler(options =>
             {
                 options.RouteBasePath = "/profiler";
-                options.SqlFormatter = new StackExchange.Profiling.SqlFormatters.InlineFormatter();
+                options.SqlFormatter = new InlineFormatter();
             }).AddEntityFramework();
-        }
 
         return services;
     }

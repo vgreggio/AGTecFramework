@@ -1,9 +1,8 @@
 ﻿using System.Threading.Tasks;
 
-namespace AGTec.Common.CQRS.Messaging
+namespace AGTec.Common.CQRS.Messaging;
+
+public interface IMessageProcessor
 {
-    public interface IMessageProcessor
-    {
-        Task Process(IMessage message);
-    }
+    Task Process(IMessage message);
 }

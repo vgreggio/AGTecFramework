@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace AGTec.Common.CQRS.Exceptions
-{
-    public class QueryHandlerNotFoundException : Exception
-    {
-        public QueryHandlerNotFoundException() : base()
-        { }
+namespace AGTec.Common.CQRS.Exceptions;
 
-        public QueryHandlerNotFoundException(string message) : base(message)
-        { }
+public class QueryHandlerNotFoundException : Exception
+{
+    public QueryHandlerNotFoundException()
+    {
+    }
+
+    public QueryHandlerNotFoundException(string message) : base(message)
+    {
     }
 }

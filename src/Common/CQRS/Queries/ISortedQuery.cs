@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace AGTec.Common.CQRS.Queries
+namespace AGTec.Common.CQRS.Queries;
+
+public interface ISortedQuery
 {
-    public interface ISortedQuery
-    {
-        IDictionary<string, SortOrder> SortFields { get; }
-    }
+    IDictionary<string, SortOrder> SortFields { get; }
 }

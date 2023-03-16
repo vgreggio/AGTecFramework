@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AGTec.Common.SignalR
+namespace AGTec.Common.SignalR;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddAGTecSignalRInfrastructure(this IServiceCollection services)
     {
-        public static IServiceCollection AddAGTecSignalRInfrastructure(this IServiceCollection services)
-        {
-            // Add UserID Provider
-            services.AddSingleton<IUserIdProvider, UserIdProvider>();
+        // Add UserID Provider
+        services.AddSingleton<IUserIdProvider, UserIdProvider>();
 
-            // SignalR
-            services.AddSignalR();
+        // SignalR
+        services.AddSignalR();
 
-            return services;
-        }
+        return services;
     }
 }

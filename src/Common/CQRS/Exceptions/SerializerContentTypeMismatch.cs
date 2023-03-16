@@ -1,13 +1,14 @@
 ﻿using System;
 
-namespace AGTec.Common.CQRS.Exceptions
-{
-    public class SerializerContentTypeMismatch : Exception
-    {
-        public SerializerContentTypeMismatch() : base()
-        { }
+namespace AGTec.Common.CQRS.Exceptions;
 
-        public SerializerContentTypeMismatch(string message) : base(message)
-        { }
+public class SerializerContentTypeMismatch : Exception
+{
+    public SerializerContentTypeMismatch()
+    {
+    }
+
+    public SerializerContentTypeMismatch(string message) : base(message)
+    {
     }
 }

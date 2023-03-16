@@ -1,8 +1,7 @@
-﻿namespace AGTec.Common.CQRS.Messaging
+﻿namespace AGTec.Common.CQRS.Messaging;
+
+public interface IMessageBusConfiguration
 {
-    public interface IMessageBusConfiguration
-    {
-        string ConnectionString { get; }
-        bool IsValid();
-    }
+    string ConnectionString { get; }
+    bool IsValid();
 }

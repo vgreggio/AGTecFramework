@@ -12,7 +12,8 @@ public abstract class Repository<TEntity, TContext> :
 {
     protected Repository(TContext context)
         : base(context)
-    { }
+    {
+    }
 
     public async Task Insert(TEntity document)
     {
@@ -34,8 +35,8 @@ public abstract class Repository<TEntity, TContext> :
         document.SetSchemaVersion();
 
         var response = await Context
-            .Client.UpdateAsync<TEntity, TEntity>(CollectionName, 
-                document.Id, 
+            .Client.UpdateAsync<TEntity, TEntity>(CollectionName,
+                document.Id,
                 u => u.Doc(document));
 
         return response.IsValidResponse;

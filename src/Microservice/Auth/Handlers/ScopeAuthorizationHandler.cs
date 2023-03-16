@@ -1,31 +1,28 @@
-﻿using AGTec.Microservice.Auth.Configuration;
+﻿using System.Linq;
+using System.Threading.Tasks;
+using AGTec.Microservice.Auth.Configuration;
 using AGTec.Microservice.Auth.Requirements;
 using Microsoft.AspNetCore.Authorization;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace AGTec.Microservice.Auth.Handlers
+namespace AGTec.Microservice.Auth.Handlers;
+
+internal class ScopeAuthorizationHandler : AuthorizationHandler<ScopeAuthorizationRequirement>
 {
-    class ScopeAuthorizationHandler : AuthorizationHandler<ScopeAuthorizationRequirement>
+    private const string ScopeClaim = "scope";
+    private readonly string _authIssuer;
+
+    public ScopeAuthorizationHandler(IAuthConfiguration authConfiguration)
     {
-        private const string ScopeClaim = "scope";
-        private readonly string _authIssuer;
+        _authIssuer = authConfiguration.AuthIssuer;
+    }
 
-        public ScopeAuthorizationHandler(IAuthConfiguration authConfiguration)
-        {
-            _authIssuer = authConfiguration.AuthIssuer;
-        }
+    protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
+        ScopeAuthorizationRequirement requirement)
+    {
+        if (context.User.HasClaim(c =>
+                c.Issuer == _authIssuer && c.Type == ScopeClaim && requirement.AllowedScopes.Contains(c.Value)))
+            context.Succeed(requirement);
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context,
-            ScopeAuthorizationRequirement requirement)
-        {
-            if (context.User.HasClaim(c => c.Issuer == _authIssuer && c.Type == ScopeClaim && requirement.AllowedScopes.Contains(c.Value)))
-            {
-                context.Succeed(requirement);
-            }
-
-            return Task.CompletedTask;
-        }
+        return Task.CompletedTask;
     }
 }

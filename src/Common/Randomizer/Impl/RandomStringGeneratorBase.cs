@@ -13,15 +13,15 @@ public abstract class RandomStringGeneratorBase : RandomGenericGeneratorBase<str
     protected RandomStringGeneratorBase(int seed)
         : base(seed)
     {
-            
     }
+
     protected string GenerateRandomString(int lenght, IList<char> source)
     {
-        int maxIndex = source.Count - 1;
-        char[] resultArray = new char[lenght];
-        char[] sourceAsArray = source.ToArray();
+        var maxIndex = source.Count - 1;
+        var resultArray = new char[lenght];
+        var sourceAsArray = source.ToArray();
 
-        for (int i = 0; i < lenght; i++)
+        for (var i = 0; i < lenght; i++)
         {
             var randomIndex = randomizer.Next(0, maxIndex);
             resultArray[i] = sourceAsArray[randomIndex];
@@ -29,21 +29,18 @@ public abstract class RandomStringGeneratorBase : RandomGenericGeneratorBase<str
 
         return new string(resultArray);
     }
-        
-    protected string GenerateStringValue(int firstLetterCode, int lastLetterCode, int length = 25, params int[] excludedChars)
+
+    protected string GenerateStringValue(int firstLetterCode, int lastLetterCode, int length = 25,
+        params int[] excludedChars)
     {
-        StringBuilder builder = new StringBuilder();
-        for (int index = 0; index < length; index++)
+        var builder = new StringBuilder();
+        for (var index = 0; index < length; index++)
         {
             var randomValue = randomizer.Next(firstLetterCode, lastLetterCode);
             if (IsExcluded(randomValue, excludedChars) == false)
-            {
                 builder.Append((char)randomValue);
-            }
             else
-            {
                 index--;
-            }
         }
 
         return builder.ToString();
@@ -51,10 +48,7 @@ public abstract class RandomStringGeneratorBase : RandomGenericGeneratorBase<str
 
     private bool IsExcluded(int character, params int[] exluded)
     {
-        if (exluded.Length == 0)
-        {
-            return false;
-        }
+        if (exluded.Length == 0) return false;
 
         return exluded.Any(item => item == character);
     }
